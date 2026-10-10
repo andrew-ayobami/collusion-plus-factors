@@ -1,0 +1,25 @@
+# Prior work (before the sprint)
+
+The AI Collusion Research Sprint runs Fri 23 – Sun 25 Oct 2026.
+Everything listed here was done **before** 23 Oct 2026 and is disclosed so the
+judges can see what is new sprint work.
+
+Rule for Phase 0: setup, reading and planning only. No analysis code.
+
+## Log
+
+| Date (WAT) | What | Where |
+|---|---|---|
+| 2026-10-10 (before this log) | Project brief written (`CLAUDE.md`): research question, plus-factor list, labelling plan, analysis plan. | `CLAUDE.md` |
+| 2026-10-10 (before this log) | Data repo inspected. A quick parser was run on all 76 runs as a sanity check: mean trade price $87.71 (no-comms `base`) vs $90.52 (matching comms runs). That parser is **not** in this repo. See note below. | `CLAUDE.md`, "Data" section |
+| 2026-10-10 | Git repo created; folders and notes files set up. | repo root |
+
+## Note on the pre-sprint sanity check
+
+`CLAUDE.md` records that the mean trade price was already computed before the
+sprint. This is a small piece of pre-sprint analysis and must be disclosed.
+The sprint loader in `src/load.py` will be written from scratch on 23 Oct.
+
+## Agreement codebook (Andrew)
+
+_To be drafted by Andrew from the legal sources during Phase 0. Paste or link it here with the date._
