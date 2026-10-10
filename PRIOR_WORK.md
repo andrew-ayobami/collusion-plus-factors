@@ -13,6 +13,10 @@ Rule for Phase 0: setup, reading and planning only. No analysis code.
 | 2026-10-10 (before this log) | Project brief written (`CLAUDE.md`): research question, plus-factor list, labelling plan, analysis plan. | `CLAUDE.md` |
 | 2026-10-10 (before this log) | Data repo inspected. A quick parser was run on all 76 runs as a sanity check: mean trade price $87.71 (no-comms `base`) vs $90.52 (matching comms runs). That parser is **not** in this repo. See note below. | `CLAUDE.md`, "Data" section |
 | 2026-10-10 | Git repo created; folders and notes files set up. | repo root |
+| 2026-10-10 | Python environment set up (versions pinned). | `requirements.txt` |
+| 2026-10-10 | Data repo cloned at commit `2bb2a7e` into `data/raw/` (not committed). | `data/raw/` |
+| 2026-10-10 | Read the paper, `market.py`, `evaluate.py`, `metrics.py`, the judge, overseer and seller prompt templates. Short factual notes written. Light inspection of file formats and one prompt-vs-log check; no analysis code written or kept. | `notes/method_facts.md` |
+| 2026-10-10 | Phase-0 decisions logged (run count 75, judge join key, unused metric). | `notes/decisions.md` |
 
 ## Note on the pre-sprint sanity check
 
