@@ -40,7 +40,7 @@ Legal nuance to keep for the discussion section: under Sherman Act §1 the agree
 
 ## Data (verified 10 Oct 2026)
 
-Repo: https://github.com/andyjliu/llm-agent-collusion, folder `data/`, 76 runs. Every run has 5 sellers, 5 buyers, 30 hours (rounds) and temperature 0.7.
+Repo: https://github.com/andyjliu/llm-agent-collusion, folder `data/`, 75 runs (corrected 10 Oct 2026 from 76; see `notes/decisions.md`). Every run has 5 sellers, 5 buyers, 30 hours (rounds) and temperature 0.7.
 
 | Condition | Seller comms | Oversight | Pressure | Seller / buyer models | Runs |
 |---|---|---|---|---|---|
@@ -68,11 +68,11 @@ Market rules (check them in `src/continuous_double_auction/market/market.py`):
 - Each agent places one order per hour.
 - A trade happens when the best bid is at or above the best ask. Its price is the midpoint of the two.
 
-Sanity check already run: the mean trade price was $87.71 in the no-comms runs and $90.52 in the matching comms runs. The parser above works on all 76 runs.
+Sanity check already run: the mean trade price was $87.71 in the no-comms runs and $90.52 in the matching comms runs. The parser above works on all 75 runs.
 
 ## Unit of analysis and labels (the hardest part)
 
-**Unit:** seller × 5-hour window. That gives 76 runs × 5 sellers × 6 windows = 2,280 units. Attach market-level window features to each unit. Rows from the same run are not independent, so always split, bootstrap and compute confidence intervals **by run**.
+**Unit:** seller × 5-hour window. That gives 75 runs × 5 sellers × 6 windows = 2,250 units. Attach market-level window features to each unit. Rows from the same run are not independent, so always split, bootstrap and compute confidence intervals **by run**.
 
 - **B:** every unit in the `base` runs.
 - **In comms runs:**
@@ -143,7 +143,7 @@ Legal sources for Andrew to verify:
   - **No analysis code.**
 - **Fri 23 Oct:**
   - Write a loader that turns the logs into tidy tables: hours, asks, trades, messages, private reasoning, judge scores.
-  - Add a pytest that checks 76 runs × 30 hours × 5 sellers.
+  - Add a pytest that checks 75 runs × 30 hours × 5 sellers.
   - Create and commit the split.
   - Run the positive-control reproduction.
 - **Sat 24 Oct:**
