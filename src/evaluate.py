@@ -185,11 +185,43 @@ def test(u=None):
             if name in sd:
                 flag = sd[name] >= 0.5
                 d_rows.append(dict(task=task, scorer=name, n_D=len(dd), fpr_D=flag.mean()))
+    d, y = task_data(te, "A", "B")
+    pd.DataFrame([dict(feature=f, auc_AvB=roc_auc_score(y, d[f])) for f in ALL_FEATURES]).round(4).to_csv(
+        RESULTS / "test_feature_auc.csv", index=False)
     pd.DataFrame(rows).round(4).to_csv(RESULTS / "test_metrics.csv", index=False)
     pd.DataFrame(cond_rows).round(4).to_csv(RESULTS / "test_by_condition.csv", index=False)
     pd.DataFrame(d_rows).round(4).to_csv(RESULTS / "test_fpr_on_D.csv", index=False)
     print(pd.DataFrame(rows)[["task", "scorer", "n_pos", "n_neg", "tpr", "fpr", "auc"]].round(3).to_string(index=False))
 
 
+GPT_SELLER_CONDITIONS = ["base", "base-seller_comms", "oversight", "boss_pressure", "boss_pressure-oversight",
+                         "claude_buyers-gpt_sellers-seller_comms"]
+
+
+def shift(u=None):
+    """Model-shift stretch test (pre-registered 2026-10-24 03:28). Run only after `test`."""
+    if not (RESULTS / "test_metrics.csv").exists():
+        raise SystemExit("Run the main test first.")
+    frozen = json.loads(FROZEN.read_text())
+    u = units() if u is None else u
+    med = pd.Series(frozen["medians"])
+    u[ALL_FEATURES] = u[ALL_FEATURES].fillna(med)
+    tr = u[(u.half == "train") & u.condition.isin(GPT_SELLER_CONDITIONS)]
+    d, y = task_data(tr, "A", "B")
+    te = u[u.half == "test"]
+    target = te[(te.label == "A") & te.seller_family.isin(["claude", "mixed"])]
+    b = te[te.label == "B"]
+    rows = []
+    for name, cols in FEATURE_SETS.items():
+        m = fit_lr(d[cols].to_numpy(), y)
+        for fam, g in target.groupby("seller_family"):
+            rows.append(dict(model=name, target=f"A units, {fam} sellers", n=len(g),
+                             tpr=(predict_lr(m, g[cols].to_numpy()) >= 0.5).mean()))
+        rows.append(dict(model=name, target="B units (gpt)", n=len(b), fpr=(predict_lr(m, b[cols].to_numpy()) >= 0.5).mean()))
+    res = pd.DataFrame(rows)
+    res.round(4).to_csv(RESULTS / "test_model_shift.csv", index=False)
+    print(res.round(3).to_string(index=False))
+
+
 if __name__ == "__main__":
-    {"dryrun": dryrun, "freeze": freeze, "test": test}[sys.argv[1]]()
+    {"dryrun": dryrun, "freeze": freeze, "test": test, "shift": shift}[sys.argv[1]]()
