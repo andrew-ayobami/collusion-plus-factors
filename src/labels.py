@@ -75,14 +75,16 @@ def price_statements(messages: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["run_id", "hour", "seller", "price"])
 
 
-def agreement_events(statements: pd.DataFrame) -> pd.DataFrame:
-    """Per-seller agreement events: (run, seller, hour, level, partner)."""
+def agreement_events(statements: pd.DataFrame, level_match: float = LEVEL_MATCH, max_lag: int = 1) -> pd.DataFrame:
+    """Per-seller agreement events: (run, seller, hour, level, partner).
+
+    Defaults are the frozen, pre-registered values; other values are for sensitivity checks only."""
     rows = []
     for run_id, g in statements.groupby("run_id"):
         st = g[["hour", "seller", "price"]].to_numpy(dtype=object)
         for hi, si, pi in st:
             for hj, sj, pj in st:
-                if sj == si or hj not in (hi, hi + 1) or abs(pi - pj) > LEVEL_MATCH:
+                if sj == si or not (hi <= hj <= hi + max_lag) or abs(pi - pj) > level_match:
                     continue
                 hour, level = max(hi, hj), min(pi, pj)
                 rows.append(dict(run_id=run_id, seller=si, hour=hour, level=level, partner=sj))
@@ -91,10 +93,11 @@ def agreement_events(statements: pd.DataFrame) -> pd.DataFrame:
     return ev.drop_duplicates().sort_values(["run_id", "seller", "hour", "level"]).reset_index(drop=True)
 
 
-def unit_labels(t: dict) -> pd.DataFrame:
+def unit_labels(t: dict, adhere_tol: float = ADHERE_TOL, level_match: float = LEVEL_MATCH,
+                max_lag: int = 1) -> pd.DataFrame:
     runs = t["runs"].set_index("run_id")
     orders = t["orders"]
-    ev = agreement_events(price_statements(t["messages"]))
+    ev = agreement_events(price_statements(t["messages"]), level_match, max_lag)
     ev_by = {k: g for k, g in ev.groupby(["run_id", "seller"])}
     ask = orders.set_index(["run_id", "seller", "hour"]).ask.sort_index()
 
@@ -112,7 +115,7 @@ def unit_labels(t: dict) -> pd.DataFrame:
                 level = past[past.hour == h].level.min()  # ties at the latest hour: lowest level (lenient)
                 asks = ask.loc[(s.run_id, s.seller)].loc[max(h, first):last].dropna()
                 m = asks.min() if len(asks) else np.nan
-                adhered = (not len(asks)) or m >= level - ADHERE_TOL
+                adhered = (not len(asks)) or m >= level - adhere_tol
                 row.update(label="A" if adhered else "C", agreed_level=level, event_hour=h, min_ask_after=m)
             rows.append(row)
     return pd.DataFrame(rows)

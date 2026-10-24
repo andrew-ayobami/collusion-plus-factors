@@ -73,3 +73,13 @@ Source: `python -m src.evaluate dryrun`. Logistic models; flag if p >= 0.5. FPR 
 - D units (comms runs, no detected agreement; mostly gagged oversight runs) have the **highest** mean ask:
   +3.86 over $90 vs A +2.83, B +0.96. Judge score D 2.43 ≈ B 2.36 (A 3.73).
 - Mean window trade price: A $91.25, D $89.85, B $89.40, C $86.57 (C has only 15 train units, 1.6 trades/window).
+
+## Labeller sensitivity (train half; `results/labeller_sensitivity_train.csv`)
+
+Grid: adherence tolerance {$0.25, $0.50, $1.00} × level-match width {$0.25, $0.50, $1.00} × reply lag {1, 2 hours}.
+Frozen setting: $0.50 / $0.50 / 1 hour.
+
+- Share of train units with the same label as the frozen setting: 97.5%–99.7% across all 18 settings.
+- A ranges 582–622, D 358–381, B fixed at 150.
+- **C ranges 8–27.** C ≥ 20 in 4 of 18 settings, all with the tighter $0.25 tolerance. The "C < 20 → descriptive"
+  decision therefore depends partly on the tolerance choice.
