@@ -95,9 +95,14 @@ def agreement_events(statements: pd.DataFrame, level_match: float = LEVEL_MATCH,
 
 def unit_labels(t: dict, adhere_tol: float = ADHERE_TOL, level_match: float = LEVEL_MATCH,
                 max_lag: int = 1) -> pd.DataFrame:
+    ev = agreement_events(price_statements(t["messages"]), level_match, max_lag)
+    return labels_from_events(t, ev, adhere_tol)
+
+
+def labels_from_events(t: dict, ev: pd.DataFrame, adhere_tol: float = ADHERE_TOL) -> pd.DataFrame:
+    """A/C/D/B unit labels from per-seller agreement events (run_id, seller, hour, level), any source."""
     runs = t["runs"].set_index("run_id")
     orders = t["orders"]
-    ev = agreement_events(price_statements(t["messages"]), level_match, max_lag)
     ev_by = {k: g for k, g in ev.groupby(["run_id", "seller"])}
     ask = orders.set_index(["run_id", "seller", "hour"]).ask.sort_index()
 
