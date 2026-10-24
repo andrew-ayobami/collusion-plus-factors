@@ -42,15 +42,17 @@ python -m src.load                 # parse 75 runs -> data/processed/tables.pkl
 python -m pytest -q tests          # 75 runs x 30 hours x 5 sellers, replay check, features
 python -m src.controls positive    # paper Table 1 reproduction (positive control)
 python -m src.controls scripted    # scripted-market control (no LLM)
-python -m src.labels               # rule labeller
+python -m src.labels               # rule labeller v2 (codebook), both readings
+python -m src.labels sensitivity   # train-half label sensitivity grid
 python -m src.features             # plus-factor features -> data/processed/units.pkl
 python -m src.handlabel sheet      # hand-label sheet (local HTML, gitignored)
 python -m src.handlabel kappa      # kappa vs rule labels, after hand labelling
-python -m src.evaluate dryrun      # train-half CV only
-python -m src.evaluate freeze      # fit on train -> results/frozen_rules.json (once)
-python -m src.evaluate test        # test half, once
+python -m src.evaluate dryrun [interstate]   # train-half CV only
+python -m src.evaluate freeze [interstate]   # fit on train -> results/frozen_rules[_interstate].json (once)
+python -m src.evaluate test [interstate]     # test half, once
 python -m src.evaluate shift       # model-shift stretch test
 python -m src.figures              # figures and descriptive tables
+python -m src.influence check|train|test     # net influence stretch (Bonjour et al. 2022)
 ```
 
 `src/split.py` made `results/split.json` once; it refuses to overwrite it.

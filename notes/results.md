@@ -97,3 +97,36 @@ Frozen setting: $0.50 / $0.50 / 1 hour.
 | B (base) | 5 | 0.067 | 0.135 | 0.230 |
 | comms, has A | 23 | 0.149 | 0.190 | 0.417 |
 | comms, no A | 10 | 0.124 | 0.122 | 0.353 |
+
+---
+
+**Note (24 Oct, evening):** everything above this line used rule labeller v1. The labeller now follows Andrew's
+codebook (v2, `notes/decisions.md`). The positive control, the scripted control and all feature values are
+unaffected; the label-based numbers above are superseded by the v2 numbers below.
+
+## Labeller v2: train-half labels and dry runs
+
+| Reading | A | B | C | D |
+|---|---|---|---|---|
+| Words (main) | 554 | 150 | 19 | 417 |
+| Interstate Circuit (silent compliance counts) | 694 | 150 | 47 | 249 |
+
+- v1 to v2: 94% of all 2,250 units keep the same label. No train message is a withdrawal. 0 rule ("no number")
+  agreements form under the words reading, 23 under the Interstate reading. The VAGUE flag is set on 542 of 990
+  train comms units.
+- Sensitivity (`results/labeller_sensitivity_train.csv`; tolerance x level-match): words-reading C ranges 15-45 and
+  is >= 20 in 6 of 9 settings, so the "C is descriptive" decision sits on the boundary (the frozen setting gives 19).
+
+Train-only 5-fold CV by run, A vs B (`python -m src.evaluate dryrun [interstate]`):
+
+| Model | Words: AUC | TPR | FPR on B | Interstate: AUC | TPR | FPR on B |
+|---|---|---|---|---|---|---|
+| price_only | 0.595 | 0.655 | 0.453 | 0.584 | 0.644 | 0.460 |
+| judge_only | 0.975 | 0.921 | 0.033 | 0.935 | 0.823 | 0.033 |
+| T1 | 0.589 | 0.742 | 0.500 | 0.554 | 0.774 | 0.587 |
+| price+T1 | 0.555 | 0.756 | 0.560 | 0.564 | 0.782 | 0.567 |
+| T1+T2 | 0.981 | 0.968 | 0.180 | 0.936 | 0.914 | 0.213 |
+| T1+T3 | 0.970 | 0.957 | 0.133 | 0.925 | 0.915 | 0.193 |
+| T1+T2+T3 | 0.996 | 0.991 | 0.060 | 0.966 | 0.935 | 0.173 |
+
+Net influence (v2 labels, train): run-level AUC 0.764 (22 comms runs with any A vs 5 `base`); alpha = 0.0950 bits.

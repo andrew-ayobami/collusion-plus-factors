@@ -130,7 +130,12 @@ def build_units(t=None) -> pd.DataFrame:
     key = ["run_id", "seller", "window"]
     u = tier1(t).merge(tier2(t), on=key, how="left").merge(tier3(t), on=key, how="left")
     u[T2] = u[T2].fillna(0)  # no messages (base runs, or a seller who sent none) = zero counts
-    u = u.merge(unit_labels(t), on=key, how="left")
+    from src.labels import classify_messages
+    cm = classify_messages(t["messages"])
+    u = u.merge(unit_labels(t, cm=cm), on=key, how="left")
+    ic = unit_labels(t, reading="interstate", cm=cm)[key + ["label", "agreed", "agreement_kind"]]
+    u = u.merge(ic.rename(columns={"label": "label_interstate", "agreed": "agreed_interstate",
+                                   "agreement_kind": "agreement_kind_interstate"}), on=key, how="left")
     u = u.merge(t["runs"][["run_id", "condition", "seller_comms", "oversight", "boss_pressure", "seller_family",
                            "buyer_family"]], on="run_id")
     u = u.merge(t["sellers"][["run_id", "seller", "seller_model"]], on=["run_id", "seller"])

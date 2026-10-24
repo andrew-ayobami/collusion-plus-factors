@@ -1,10 +1,12 @@
 """Fit on the train half, freeze, then evaluate once on the test half.
 
-  python -m src.evaluate dryrun   train half only: 5-fold CV by run (nothing written to results/)
-  python -m src.evaluate freeze   fit on train half -> results/frozen_rules.json (commit it)
-  python -m src.evaluate test     apply frozen rules to the test half ONCE -> results/test_*.csv
+  python -m src.evaluate dryrun [interstate]   train half only: 5-fold CV by run (nothing written to results/)
+  python -m src.evaluate freeze [interstate]   fit on train half -> results/frozen_rules[_interstate].json (commit)
+  python -m src.evaluate test [interstate]     apply frozen rules to the test half ONCE -> results/test_*[_interstate].csv
+  python -m src.evaluate shift                 model-shift stretch test (main reading only)
 
-Plan pre-registered in notes/decisions.md (2026-10-24 03:19).
+reading = "words" (main labels, codebook Rule 4) or "interstate" (sensitivity: silent compliance counts).
+Plan pre-registered in notes/decisions.md (2026-10-24 03:19; readings added before any hand label was seen).
 """
 from __future__ import annotations
 
@@ -40,11 +42,21 @@ FEATURE_SETS = {
 ALL_FEATURES = PRICE_ONLY + T1 + T2 + T3
 
 
-def units(labels_override: pd.DataFrame | None = None) -> pd.DataFrame:
+def units(reading: str = "words") -> pd.DataFrame:
     u = pd.read_pickle(PROCESSED / "units.pkl")
-    if labels_override is not None:
-        u = u.drop(columns="label").merge(labels_override, on=["run_id", "seller", "window"])
+    if reading == "interstate":
+        u["label"] = u["label_interstate"]
+    elif reading != "words":
+        raise ValueError(reading)
     return u
+
+
+def _frozen_path(reading: str):
+    return FROZEN if reading == "words" else FROZEN.with_name(f"frozen_rules_{reading}.json")
+
+
+def _sfx(reading: str) -> str:
+    return "" if reading == "words" else f"_{reading}"
 
 
 def fit_lr(X: np.ndarray, y: np.ndarray) -> dict:
@@ -81,8 +93,8 @@ def task_data(u: pd.DataFrame, pos: str, neg: str):
     return d, (d.label == pos).astype(int).to_numpy()
 
 
-def dryrun(u=None):
-    u = units() if u is None else u
+def dryrun(u=None, reading: str = "words"):
+    u = units(reading) if u is None else u
     tr = u[u.half == "train"].copy()
     med = tr[ALL_FEATURES].median()
     tr[ALL_FEATURES] = tr[ALL_FEATURES].fillna(med)
@@ -95,14 +107,15 @@ def dryrun(u=None):
             p[val_ix] = predict_lr(m, d[cols].to_numpy()[val_ix])
         flag = p >= 0.5
         rows.append(dict(model=name, cv_auc=roc_auc_score(y, p), cv_tpr=flag[y == 1].mean(), cv_fpr_B=flag[y == 0].mean()))
-    print("TRAIN ONLY, 5-fold CV by run, A vs B:")
+    print(f"TRAIN ONLY, reading={reading}, 5-fold CV by run, A vs B:")
     print(pd.DataFrame(rows).round(3).to_string(index=False))
 
 
-def freeze(u=None, note: str = ""):
-    if FROZEN.exists():
-        raise SystemExit(f"{FROZEN} exists. Rules are frozen; never refit after seeing test results.")
-    u = units() if u is None else u
+def freeze(u=None, note: str = "", reading: str = "words"):
+    path = _frozen_path(reading)
+    if path.exists():
+        raise SystemExit(f"{path} exists. Rules are frozen; never refit after seeing test results.")
+    u = units(reading) if u is None else u
     tr = u[u.half == "train"].copy()
     med = tr[ALL_FEATURES].median()
     tr[ALL_FEATURES] = tr[ALL_FEATURES].fillna(med)
@@ -114,15 +127,15 @@ def freeze(u=None, note: str = ""):
         frozen_at=datetime.now().isoformat(timespec="seconds"),
         git_commit=subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
                                   cwd=ROOT).stdout.strip(),
-        note=note, train_label_counts=counts, medians=med.to_dict(), tasks={})
+        reading=reading, note=note, train_label_counts=counts, medians=med.to_dict(), tasks={})
     for task, (pos, neg) in tasks.items():
         d, y = task_data(tr, pos, neg)
         models = {name: dict(features=cols, **fit_lr(d[cols].to_numpy(), y)) for name, cols in FEATURE_SETS.items()}
         rules = {f: youden_rule(d[f].to_numpy(), y) for f in ALL_FEATURES}
         frozen["tasks"][task] = dict(positive=pos, negative=neg, n_train=dict(pos=int(y.sum()), neg=int((1 - y).sum())),
                                      models=models, single_feature_rules=rules)
-    FROZEN.write_text(json.dumps(frozen, indent=2), encoding="utf-8")
-    print(f"Frozen -> {FROZEN}: tasks {list(tasks)}; train counts {counts}")
+    path.write_text(json.dumps(frozen, indent=2), encoding="utf-8")
+    print(f"Frozen -> {path}: tasks {list(tasks)}; train counts {counts}")
 
 
 # ------------------------------------------------------------------ test (run once, after freezing)
@@ -155,9 +168,10 @@ def _boot(d, y, s, is_model, rng):
     return pd.DataFrame(reps)
 
 
-def test(u=None):
-    frozen = json.loads(FROZEN.read_text())
-    u = units() if u is None else u
+def test(u=None, reading: str = "words"):
+    frozen = json.loads(_frozen_path(reading).read_text())
+    u = units(reading) if u is None else u
+    sfx = _sfx(reading)
     te = u[u.half == "test"].copy()
     te[ALL_FEATURES] = te[ALL_FEATURES].fillna(pd.Series(frozen["medians"]))
     rng = np.random.default_rng(20261025)
@@ -187,10 +201,10 @@ def test(u=None):
                 d_rows.append(dict(task=task, scorer=name, n_D=len(dd), fpr_D=flag.mean()))
     d, y = task_data(te, "A", "B")
     pd.DataFrame([dict(feature=f, auc_AvB=roc_auc_score(y, d[f])) for f in ALL_FEATURES]).round(4).to_csv(
-        RESULTS / "test_feature_auc.csv", index=False)
-    pd.DataFrame(rows).round(4).to_csv(RESULTS / "test_metrics.csv", index=False)
-    pd.DataFrame(cond_rows).round(4).to_csv(RESULTS / "test_by_condition.csv", index=False)
-    pd.DataFrame(d_rows).round(4).to_csv(RESULTS / "test_fpr_on_D.csv", index=False)
+        RESULTS / f"test_feature_auc{sfx}.csv", index=False)
+    pd.DataFrame(rows).round(4).to_csv(RESULTS / f"test_metrics{sfx}.csv", index=False)
+    pd.DataFrame(cond_rows).round(4).to_csv(RESULTS / f"test_by_condition{sfx}.csv", index=False)
+    pd.DataFrame(d_rows).round(4).to_csv(RESULTS / f"test_fpr_on_D{sfx}.csv", index=False)
     print(pd.DataFrame(rows)[["task", "scorer", "n_pos", "n_neg", "tpr", "fpr", "auc"]].round(3).to_string(index=False))
 
 
@@ -224,4 +238,8 @@ def shift(u=None):
 
 
 if __name__ == "__main__":
-    {"dryrun": dryrun, "freeze": freeze, "test": test, "shift": shift}[sys.argv[1]]()
+    cmd, reading = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "words")
+    if cmd == "shift":
+        shift()
+    else:
+        {"dryrun": dryrun, "freeze": freeze, "test": test}[cmd](reading=reading)

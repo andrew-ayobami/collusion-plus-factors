@@ -2,7 +2,7 @@
 
 One call per run (not per unit): the model lists agreement events (hour formed, level, parties) from the
 transcript; unit labels then follow from the same frozen adherence rule as the rule labeller
-(src.labels.labels_from_events). Validate against Andrew's hand labels before using it anywhere.
+(src.labels.labels_from_events, v2 event schema). Validate against Andrew's hand labels before using it anywhere.
 
 Default is ZERO API calls.
   python -m src.llm_labels dryrun                      build prompts, estimate size, no network
@@ -140,23 +140,24 @@ def llm_events(t, model: str, runs: list[str]) -> pd.DataFrame:
             if len(set(parties)) < 2:
                 continue
             level = a.get("level")
-            for p in set(parties):  # non-price rule: adherence cannot be checked from asks -> treated as kept
-                rows.append(dict(run_id=run_id, seller=p, hour=int(a["hour_formed"]),
-                                 level=float(level) if level is not None else -np.inf))
-    return pd.DataFrame(rows, columns=["run_id", "seller", "hour", "level"])
+            kind = "price" if level is not None else "rule"  # rule adherence: never below the lowest other ask
+            for p in set(parties):
+                rows.append(dict(run_id=run_id, seller=p, hour=int(a["hour_formed"]), kind=kind,
+                                 level=float(level) if level is not None else np.nan))
+    return pd.DataFrame(rows, columns=["run_id", "seller", "hour", "kind", "level"])
 
 
 def kappa(args):
     from sklearn.metrics import cohen_kappa_score
     t = load()
-    hand = pd.read_csv(PROCESSED / "hand_labels_raw.csv")
-    hand = hand[hand.label.isin(list("ACD"))]
+    hand = pd.read_csv(PROCESSED / "hand_labels_raw.csv", dtype=str)
+    hand["agreement"] = hand.agreement.fillna("").str.strip().str.lower()
+    hand = hand[hand.agreement.isin(["yes", "no"])]
     runs = sorted({u.split("|")[0] for u in hand.unit_id})
     lab = labels_from_events(t, llm_events(t, args.model, runs))
     lab["unit_id"] = lab.run_id + "|" + lab.seller + "|" + lab.window.astype(str)
-    m = hand.merge(lab[["unit_id", "label"]], on="unit_id", suffixes=("_hand", "_llm"))
-    print(dict(n=len(m), kappa_ACD=round(cohen_kappa_score(m.label_hand, m.label_llm), 3),
-               kappa_agreed=round(cohen_kappa_score(m.label_hand.isin(["A", "C"]), m.label_llm.isin(["A", "C"])), 3)))
+    m = hand.merge(lab[["unit_id", "agreed"]], on="unit_id")
+    print(dict(n=len(m), kappa_agreement=round(cohen_kappa_score(m.agreement == "yes", m.agreed), 3)))
 
 
 if __name__ == "__main__":
