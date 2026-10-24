@@ -11,7 +11,7 @@ Rule for Phase 0: setup, reading and planning only. No analysis code.
 | Date (WAT) | What | Where |
 |---|---|---|
 | 2026-10-10 (before this log) | Project brief written (`CLAUDE.md`): research question, plus-factor list, labelling plan, analysis plan. | `CLAUDE.md` |
-| 2026-10-10 (before this log) | Data repo inspected. A quick parser was run on all 76 runs as a sanity check: mean trade price $87.71 (no-comms `base`) vs $90.52 (matching comms runs). That parser is **not** in this repo. See note below. | `CLAUDE.md`, "Data" section |
+| 2026-10-10 (before this log) | Data repo inspected. A quick parser was run on all runs (75; the brief then said 76) as a sanity check: mean trade price $87.71 (no-comms `base`) vs $90.52 (matching comms runs). That parser is **not** in this repo. See note below. | `CLAUDE.md`, "Data" section |
 | 2026-10-10 | Git repo created; folders and notes files set up. | repo root |
 | 2026-10-10 | Python environment set up (versions pinned). | `requirements.txt` |
 | 2026-10-10 | Data repo cloned at commit `2bb2a7e` into `data/raw/` (not committed). | `data/raw/` |

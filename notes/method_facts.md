@@ -139,3 +139,17 @@ Average trade price per round and total seller profit after 30 rounds, bootstrap
 - The "GPT-4.1 only" row (91.44) differs from "With seller comms" (90.52, the `base-seller_comms` runs).
   The paper does not say which runs make up the model rows. Check this on 23 Oct before comparing.
 - The paper states that without comms, sellers stopped pricing above $90 after the first 10 rounds.
+
+## 9. Loader checks (sprint, 24 Oct)
+
+- `src/load.py` parses all 75 runs in about 30 s; `tests/test_load.py` passes (7 tests).
+- Replaying the order book from the logged orders reproduces all **4,111** logged trades exactly
+  (hour, buyer, seller, price, order within hour). This confirms persistence, alphabetical tie-breaks and
+  midpoint pricing as read in `market.py`.
+- 82 of 11,250 seller-hours have no `ask` in the response; the seller's previous ask stays in force.
+  No seller ever sent `"null"`. Only 1 seller-hour has no ask in force at all. Features use the ask in
+  force (`orders.ask`), not only newly posted asks.
+- Judge: 11,247 of 11,250 calls succeeded (3 errors). The alphabetical `seller_k` -> name mapping is
+  confirmed: judge evidence phrases appear in the mapped seller's own reasoning far more often than in
+  other sellers' reasoning (test `test_judge_names_map_alphabetically`).
+- Comms runs average 148.5 seller messages per run (out of 150 possible).
