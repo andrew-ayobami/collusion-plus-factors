@@ -27,19 +27,21 @@ def fig_test_ab():
     m = m[(m.task == "A_vs_B") & m.scorer.str.startswith("model:")].copy()
     m["model"] = m.scorer.str.replace("model:", "")
     m = m.set_index("model").loc[list(FEATURE_SETS)[::-1]]
-    fig, axes = plt.subplots(1, 3, figsize=(11, 3.8), sharey=True, facecolor=SURFACE)
-    for ax, (col, title) in zip(axes, [("tpr", "Detects agreement (TPR on A)"),
-                                       ("fpr", "Flags innocent parallel conduct (FPR on B)"),
-                                       ("auc", "Overall separation (AUC)")]):
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4.2), sharey=True, facecolor=SURFACE)
+    for ax, (col, title) in zip(axes, [("tpr", "Detects agreement\n(true-positive rate on A)"),
+                                       ("fpr", "Flags innocent parallel conduct\n(false-positive rate on B)"),
+                                       ("auc", "Overall separation\n(AUC; 0.5 = chance)")]):
         _style(ax)
         ax.grid(axis="x", color=GRID, linewidth=0.8)
         ax.grid(axis="y", visible=False)
         y = np.arange(len(m))
         ax.errorbar(m[col], y, xerr=[m[col] - m[f"{col}_lo"], m[f"{col}_hi"] - m[col]], fmt="o", color=BLUE,
                     ecolor=BLUE, elinewidth=2, capsize=0, markersize=7)
-        for yi, v in zip(y, m[col]):
-            ax.text(v, yi + 0.28, f"{v:.2f}", ha="center", va="bottom", fontsize=8, color=INK2)
-        ax.set_xlim(0, 1.02)
+        for yi, v, hi in zip(y, m[col], m[f"{col}_hi"]):
+            ax.text(min(hi, 1.0) + 0.03, yi, f"{v:.2f}", ha="left", va="center", fontsize=8, color=INK2)
+        ax.set_xlim(0, 1.15)
+        ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+        ax.set_ylim(-0.6, len(m) - 0.4)
         if col == "auc":
             ax.axvline(0.5, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
         ax.set_title(title, loc="left", color=INK, fontsize=10)
@@ -59,7 +61,7 @@ def fig_feature_separation():
     llm = pd.read_csv(RESULTS / "test_feature_auc.csv").set_index("feature").auc_AvB
     llm = np.maximum(llm, 1 - llm)
     feats = (PRICE_ONLY + T1)[::-1]
-    fig, ax = plt.subplots(figsize=(7, 4.6), facecolor=SURFACE)
+    fig, ax = plt.subplots(figsize=(7.5, 5.0), facecolor=SURFACE)
     _style(ax)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     ax.grid(axis="y", visible=False)
@@ -72,9 +74,10 @@ def fig_feature_separation():
     ax.set_yticks(y, feats, color=INK, fontsize=9)
     ax.set_xlim(0.45, 1.02)
     ax.set_xlabel("Separation = max(AUC, 1 − AUC); 0.5 = no signal", color=INK2, fontsize=9)
-    ax.set_title("Single plus factors: strong on a scripted cartel, weak on LLM sellers", loc="left", color=INK,
+    ax.set_title("Single plus factors: scripted cartel vs LLM sellers (A vs B)", loc="left", color=INK,
                  fontsize=10)
-    ax.legend(frameon=False, fontsize=8.5, labelcolor=INK, loc="lower right")
+    ax.legend(frameon=False, fontsize=8.5, labelcolor=INK, loc="upper center", bbox_to_anchor=(0.45, -0.13),
+              ncol=2)
     fig.tight_layout()
     fig.savefig(RESULTS / "fig_feature_separation.png", dpi=200, facecolor=SURFACE)
     plt.close(fig)
@@ -111,7 +114,7 @@ def harm_and_c():
     order = ["B", "D", "A", "C"]
     names = {"B": "B: no comms", "D": "D: comms, no agreement", "A": "A: agreement kept", "C": "C: agreement broken"}
     h = harm[harm.measure == "win_trade_price"].set_index("label").loc[order]
-    fig, ax = plt.subplots(figsize=(6.5, 3.2), facecolor=SURFACE)
+    fig, ax = plt.subplots(figsize=(8, 3.4), facecolor=SURFACE)
     _style(ax)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     ax.grid(axis="y", visible=False)
@@ -119,15 +122,16 @@ def harm_and_c():
     ax.errorbar(h["mean"], y, xerr=[h["mean"] - h.lo, h.hi - h["mean"]], fmt="o", color=BLUE, elinewidth=2,
                 capsize=0, markersize=7)
     for yi, (lab, r) in zip(y, h.iterrows()):
-        ax.text(r.hi + 0.15, yi, f"${r['mean']:.2f}  ({int(r.n_units)} units, {int(r.n_runs)} runs)", va="center",
+        ax.text(r.hi + 0.15, yi, f"\\${r['mean']:.2f}  ({int(r.n_units)} units, {int(r.n_runs)} runs)", va="center",
                 fontsize=8, color=INK2)
     ax.axvline(90, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
     ax.set_yticks(y, [names[k] for k in order], color=INK, fontsize=9)
-    ax.set_xlabel("Mean trade price in the window ($); dashed = competitive price $90", color=INK2, fontsize=9)
-    ax.set_title("Harm by label: window trade price (all 75 runs, 95% CI over runs)", loc="left", color=INK,
+    ax.set_xlabel("Mean trade price in the window (\\$); dashed line = competitive price \\$90", color=INK2,
+                  fontsize=9)
+    ax.set_title("Harm by label: mean trade price per window (95% CI over runs)", loc="left", color=INK,
                  fontsize=10)
     lo = np.nanmin(h.lo) - 1
-    ax.set_xlim(lo, np.nanmax(h.hi) + 4)
+    ax.set_xlim(lo, np.nanmax(h.hi) + 6)
     fig.tight_layout()
     fig.savefig(RESULTS / "fig_harm_by_label.png", dpi=200, facecolor=SURFACE)
     plt.close(fig)
