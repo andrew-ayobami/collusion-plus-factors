@@ -204,3 +204,4 @@ Messages are split into sentences as in v1; a **price** is a dollar figure in (8
 
 | Time (WAT) | Decision | Reason |
 |---|---|---|
+| 2026-10-24 22:04 | **Codebook v2 committed as `bc278ee`** (Andrew; all legal sources verified by Andrew, "to verify" markers removed). Committed before any hand label. Codebook history: v1 draft `95b9a8f`, v2 `bc278ee`. The rule labeller matching v2 was committed earlier at `f7a89f0`. | Andrew instruction 5. |
