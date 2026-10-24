@@ -83,3 +83,17 @@ Frozen setting: $0.50 / $0.50 / 1 hour.
 - A ranges 582–622, D 358–381, B fixed at 150.
 - **C ranges 8–27.** C ≥ 20 in 4 of 18 settings, all with the tighter $0.25 tolerance. The "C < 20 → descriptive"
   decision therefore depends partly on the tolerance choice.
+
+## Net influence stretch (Bonjour et al. 2022), run level
+
+- Implementation check (`results/net_influence_check.csv`): in 30 scripted markets with one colluding pair among
+  three independents, the true pair had the top pair score in **30/30**. True-pair scores 0.87–1.29 bits; best
+  other pair ≤ 0.09 bits.
+- Train half (`results/net_influence_train_runs.csv`, `results/net_influence_frozen.json`): run-level AUC **0.765**
+  for comms runs with any A unit (23 runs) vs `base` (5 runs). Frozen α = 0.0867 bits.
+
+| Train group | Runs | Mean run score (bits) | Mean pairwise γ (bits) | Share of "hold" moves |
+|---|---|---|---|---|
+| B (base) | 5 | 0.067 | 0.135 | 0.230 |
+| comms, has A | 23 | 0.149 | 0.190 | 0.417 |
+| comms, no A | 10 | 0.124 | 0.122 | 0.353 |

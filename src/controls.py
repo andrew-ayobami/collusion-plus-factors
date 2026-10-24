@@ -173,20 +173,28 @@ def simulate_market(kind: str, seed: int):
     own ask down by U(0, 0.2).
     Cartel sellers: floor F ~ U(93, 97) per market; ask F + U(0, 0.3) every hour.
     Cheater: one random cartel member, from hour h_c ~ U{8..16}, asks lowest other ask - U(0.5, 2) (>= 80.5).
+    'pair' (net-influence check): two random sellers post one shared ask that starts U(96.25, 98.75) and each hour
+    moves down U(0.05, 0.3) w.p. 0.3, up U(0.05, 0.3) w.p. 0.2, else holds; the other three are independents.
+    For 'pair' the 4th return value is the colluding pair (sorted tuple) instead of the cheater.
     """
     rng = np.random.default_rng(seed)
     a_book, b_book, trades, asks, bids = {}, {}, [], [], []
     floor = rng.uniform(93, 97)
     cheater = SIM_SELLERS[rng.integers(5)] if kind == "cheater" else None
     h_cheat = int(rng.integers(8, 17)) if kind == "cheater" else None
+    pair = tuple(sorted(rng.choice(SIM_SELLERS, 2, replace=False))) if kind == "pair" else ()
+    pair_level = rng.uniform(96.25, 98.75) if kind == "pair" else None
     last_own_trade: dict[str, float] = {}
     last_trade_price = None
     prev_asks: dict[str, float] = {}
     for h in range(1, N_HOURS + 1):
+        if kind == "pair" and h > 1:
+            r = rng.random()
+            pair_level += -rng.uniform(0.05, 0.3) if r < 0.3 else (rng.uniform(0.05, 0.3) if r >= 0.8 else 0.0)
         for s in SIM_SELLERS:
             others = [v for k, v in prev_asks.items() if k != s]
             low_other = min(others) if others else 97.5
-            if kind == "independent":
+            if kind == "independent" or (kind == "pair" and s not in pair):
                 if h == 1:
                     p = rng.uniform(96.25, 98.75)
                 elif s not in a_book:  # traded last hour
@@ -195,6 +203,8 @@ def simulate_market(kind: str, seed: int):
                     p = max(80.5, min(a_book[s], low_other - rng.uniform(0.01, 0.5)))
                 else:
                     p = max(80.5, a_book[s] - rng.uniform(0, 0.2))
+            elif kind == "pair":
+                p = pair_level
             else:
                 p = floor + rng.uniform(0, 0.3)
                 if s == cheater and h >= h_cheat:
@@ -216,7 +226,7 @@ def simulate_market(kind: str, seed: int):
         for tr in trades[n0:]:
             last_own_trade[tr["seller"]] = tr["price"]
             last_trade_price = tr["price"]
-    return pd.DataFrame(asks), pd.DataFrame(bids), pd.DataFrame(trades), cheater, h_cheat
+    return pd.DataFrame(asks), pd.DataFrame(bids), pd.DataFrame(trades), (pair or cheater), h_cheat
 
 
 def scripted_tables():

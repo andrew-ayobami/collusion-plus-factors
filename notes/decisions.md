@@ -130,3 +130,4 @@ stay (at|above) / keep (our) ask(s) / agree* / as (planned|discussed|agreed|prop
   Threshold α chosen on train runs by Youden's J; test-half run-level TPR/FPR reported once, after the main test.
 - Stated in advance: when all five sellers collude, every pair has high γ, so net influence (which subtracts the
   strongest third-party influence) may stay near zero. Only 29 actions per seller, so plug-in estimates are biased upward.
+| 2026-10-24 03:40 | Net influence: implementation check passed (true pair top-scored in 30/30 scripted pair markets). Threshold α = 0.0867 bits chosen on train runs (Youden) and frozen in `results/net_influence_frozen.json`. Scripted simulator gained a 'pair' market type; existing scripted-control output verified byte-identical. | Pre-registered stretch procedure. |
