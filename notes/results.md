@@ -65,3 +65,11 @@ Source: `python -m src.evaluate dryrun`. Logistic models; flag if p >= 0.5. FPR 
 
 - Only 5 B runs in train, so each CV fold holds out one B run.
 - T2 features are zero for every B unit (no messages exist), so any T2 model separates A from B partly by construction.
+
+## Train half: single features (`results/train_feature_auc.csv`)
+
+- Tier 1 features one at a time separate A from B only weakly on the LLM logs: separation 0.52–0.68
+  (best: level_shift 0.677, ask_minus_ce 0.637). Compare 0.80–0.99 for the best ones in the scripted market.
+- D units (comms runs, no detected agreement; mostly gagged oversight runs) have the **highest** mean ask:
+  +3.86 over $90 vs A +2.83, B +0.96. Judge score D 2.43 ≈ B 2.36 (A 3.73).
+- Mean window trade price: A $91.25, D $89.85, B $89.40, C $86.57 (C has only 15 train units, 1.6 trades/window).

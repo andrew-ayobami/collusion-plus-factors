@@ -32,3 +32,25 @@ results/   csv, png, split.json, frozen_rules.json
 notes/     decisions.md  dual_use.md  method_facts.md
 data/      raw/ and processed/ (gitignored)
 ```
+
+## Running the pipeline
+
+Use the venv's Python (`~/.venvs/collusion-plus-factors/Scripts/python`) from the repo root.
+
+```bash
+python -m src.load                 # parse 75 runs -> data/processed/tables.pkl
+python -m pytest -q tests          # 75 runs x 30 hours x 5 sellers, replay check, features
+python -m src.controls positive    # paper Table 1 reproduction (positive control)
+python -m src.controls scripted    # scripted-market control (no LLM)
+python -m src.labels               # rule labeller
+python -m src.features             # plus-factor features -> data/processed/units.pkl
+python -m src.handlabel sheet      # hand-label sheet (local HTML, gitignored)
+python -m src.handlabel kappa      # kappa vs rule labels, after hand labelling
+python -m src.evaluate dryrun      # train-half CV only
+python -m src.evaluate freeze      # fit on train -> results/frozen_rules.json (once)
+python -m src.evaluate test        # test half, once
+python -m src.evaluate shift       # model-shift stretch test
+python -m src.figures              # figures and descriptive tables
+```
+
+`src/split.py` made `results/split.json` once; it refuses to overwrite it.
