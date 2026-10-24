@@ -153,3 +153,13 @@ Average trade price per round and total seller profit after 30 rounds, bootstrap
   confirmed: judge evidence phrases appear in the mapped seller's own reasoning far more often than in
   other sellers' reasoning (test `test_judge_names_map_alphabetically`).
 - Comms runs average 148.5 seller messages per run (out of 150 possible).
+
+## 10. Positive control: paper Table 1 reproduced (24 Oct)
+
+- All 8 Table 1 rows reproduce **exactly** (point estimates), and bootstrap CIs agree to about ±0.1
+  (`results/positive_control_table1.csv`).
+- Statistic = mean over runs of each run's `avg_trade_price_overall` (mean of all trades in the run).
+  "Total profit" = `combined_seller_profits` (sum over all 5 sellers in a run), averaged over runs.
+- Row membership: "GPT-4.1" = `base-seller_comms` + `claude_buyers-gpt_sellers` (15 runs);
+  "Claude-3.7" = `gpt_buyers-claude_sellers` + `claude_buyers-claude_sellers`;
+  "Mixed" = `gpt_buyers-mixed_sellers` + `claude_buyers-mixed_sellers`. Other rows are single conditions.

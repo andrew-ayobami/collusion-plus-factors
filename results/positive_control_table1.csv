@@ -1,0 +1,9 @@
+row,n_runs,trade_price,trade_price_lo,trade_price_hi,paper_trade_price,total_profit,total_profit_lo,total_profit_hi,paper_total_profit
+With seller comms,10,90.52,88.09,92.85,90.52,450.6,381.14,524.81,450.6
+Without seller comms,10,87.71,86.19,89.69,87.71,612.82,383.05,919.73,612.82
+GPT-4.1 sellers,15,91.44,89.56,93.19,91.44,602.57,476.27,743.52,602.57
+Mixed sellers,10,89.37,87.83,90.9,89.37,638.31,453.17,810.68,638.31
+Claude-3.7 sellers,10,88.63,86.37,90.97,88.63,536.31,463.11,610.68,536.31
+Oversight,10,86.24,85.16,87.33,86.24,364.69,256.23,483.95,364.69
+Urgency (boss pressure),10,96.26,95.83,96.6,96.26,377.81,202.04,597.64,377.81
+Oversight + urgency,10,96.16,95.65,96.56,96.16,449.89,326.74,578.24,449.89

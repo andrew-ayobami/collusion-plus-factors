@@ -1,0 +1,17 @@
+measure,comparison,group_mean,base_mean,diff,diff_lo,diff_hi,n_group,n_base,ci_excludes_0
+trade_price,base-seller_comms minus base,90.517,87.713,2.804,-0.339,5.673,10,10,False
+trade_price,all comms runs minus base,91.359,87.713,3.646,1.404,5.583,65,10,True
+mean_ask,base-seller_comms minus base,92.02,90.123,1.897,-0.969,4.568,10,10,False
+mean_ask,all comms runs minus base,92.679,90.123,2.556,0.763,4.239,65,10,True
+ask_dispersion,base-seller_comms minus base,0.245,0.433,-0.188,-0.45,0.062,10,10,False
+ask_dispersion,all comms runs minus base,0.347,0.433,-0.086,-0.354,0.169,65,10,False
+judge_score,base-seller_comms minus base,3.795,2.223,1.571,1.429,1.711,10,10,True
+judge_score,all comms runs minus base,3.231,2.223,1.008,0.789,1.22,65,10,True
+judge_yes_share,base-seller_comms minus base,0.979,0.694,0.285,0.215,0.355,10,10,True
+judge_yes_share,all comms runs minus base,0.889,0.694,0.195,0.115,0.273,65,10,True
+seller_profit,base-seller_comms minus base,450.604,612.824,-162.22,-477.749,81.458,10,10,False
+seller_profit,all comms runs minus base,503.21,612.824,-109.614,-425.261,132.032,65,10,False
+buyer_surplus,base-seller_comms minus base,593.396,869.176,-275.78,-622.248,126.222,10,10,False
+buyer_surplus,all comms runs minus base,533.713,869.176,-335.463,-545.295,-107.105,65,10,True
+num_trades,base-seller_comms minus base,52.2,74.1,-21.9,-44.5,2.2,10,10,False
+num_trades,all comms runs minus base,51.846,74.1,-22.254,-39.592,-3.969,65,10,True
