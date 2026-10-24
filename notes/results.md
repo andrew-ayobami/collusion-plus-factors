@@ -48,3 +48,20 @@ AUC = chance that a random positive unit scores higher than a random negative on
 - Units: A 1,675, B 900, C 125.
 - The scripted cartel has no price leader and no rotation by design, so this control does **not** test the
   leadership or rotation metrics; it only shows they do not break the combined model.
+
+## Train-half dry run (5-fold CV by run, A vs B; rule labels; nothing frozen)
+
+Source: `python -m src.evaluate dryrun`. Logistic models; flag if p >= 0.5. FPR = share of B units flagged.
+
+| Model | CV AUC | TPR on A | FPR on B |
+|---|---|---|---|
+| price_only | 0.551 | 0.586 | 0.460 |
+| judge_only | 0.962 | 0.888 | 0.033 |
+| T1 | 0.641 | 0.795 | 0.493 |
+| price+T1 | 0.574 | 0.788 | 0.573 |
+| T1+T2 | 0.975 | 0.960 | 0.180 |
+| T1+T3 | 0.968 | 0.942 | 0.147 |
+| T1+T2+T3 | 0.990 | 0.980 | 0.093 |
+
+- Only 5 B runs in train, so each CV fold holds out one B run.
+- T2 features are zero for every B unit (no messages exist), so any T2 model separates A from B partly by construction.
