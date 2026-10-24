@@ -1,0 +1,27 @@
+task,feature,auc,separation
+A vs B,ask_minus_ce,0.828,0.828
+A vs B,mkt_disp,0.199,0.801
+A vs B,own_gap,0.01,0.99
+A vs B,comove,0.541,0.541
+A vs B,holdout_share,0.704,0.704
+A vs B,holdout_gap,0.645,0.645
+A vs B,level_shift,0.916,0.916
+A vs B,disp_shift,0.553,0.553
+A vs B,follow_beta,0.425,0.575
+A vs B,lead_beta,0.562,0.562
+A vs B,even_vs_chance,0.266,0.734
+A vs B,"T1 (logistic, 5-fold by market)",1.0,1.0
+A vs B,price only (logistic),0.823,0.823
+A vs C,ask_minus_ce,0.768,0.768
+A vs C,mkt_disp,0.149,0.851
+A vs C,own_gap,0.0,1.0
+A vs C,comove,0.523,0.523
+A vs C,holdout_share,0.646,0.646
+A vs C,holdout_gap,0.741,0.741
+A vs C,level_shift,0.986,0.986
+A vs C,disp_shift,0.16,0.84
+A vs C,follow_beta,0.388,0.612
+A vs C,lead_beta,0.755,0.755
+A vs C,even_vs_chance,0.632,0.632
+A vs C,"T1 (logistic, 5-fold by market)",1.0,1.0
+A vs C,price only (logistic),0.749,0.749

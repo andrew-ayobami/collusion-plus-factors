@@ -22,3 +22,29 @@ Source: `results/positive_control_contrasts.csv`, `results/fig_positive_control.
   (mean score 2.22). In `base-seller_comms` it is 98% (mean 3.80).
 - Direction matches the paper: messaging raises prices and judge scores. With only 10 vs 10 runs, the
   price difference CI for `base-seller_comms` alone includes 0; pooled over all comms runs it does not.
+
+## Scripted-market control (no LLM; 30 markets per type)
+
+Source: `results/scripted_control_auc.csv`, `results/scripted_control_feature_means.csv`. Rules as `market.py`
+(midpoint price, persistence, alphabetical ties); agent rules in `src/controls.py:simulate_market`.
+Replaying the simulated orders through `load.replay` reproduces every simulated trade.
+
+AUC = chance that a random positive unit scores higher than a random negative one (0.5 = no signal, 1 = perfect).
+"Separation" = max(AUC, 1 − AUC), i.e. ignoring direction.
+
+| Feature | A (cartel) vs B (independents) | A (loyal) vs C (cheater) |
+|---|---|---|
+| T1 logistic, 5-fold CV by market | **1.000** | **1.000** |
+| price only (logistic) | 0.823 | 0.749 |
+| own_gap | 0.990 | 1.000 |
+| level_shift | 0.916 | 0.986 |
+| mkt_disp | 0.801 | 0.851 |
+| even_vs_chance | 0.734 | 0.632 |
+| holdout_share | 0.704 | 0.646 |
+| holdout_gap | 0.645 | 0.741 |
+| follow_beta / lead_beta | 0.575 / 0.562 | 0.612 / 0.755 |
+| comove / disp_shift | 0.541 / 0.553 | 0.523 / 0.840 |
+
+- Units: A 1,675, B 900, C 125.
+- The scripted cartel has no price leader and no rotation by design, so this control does **not** test the
+  leadership or rotation metrics; it only shows they do not break the combined model.

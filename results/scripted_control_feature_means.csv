@@ -1,0 +1,13 @@
+,A,B,C
+ask_minus_ce,5.314,2.128,4.126
+mkt_disp,0.202,0.401,0.5
+own_gap,0.086,0.449,1.229
+comove,0.018,-0.057,-0.022
+holdout_share,0.999,0.867,0.861
+holdout_gap,5.954,4.359,2.895
+level_shift,-0.001,-2.737,-0.799
+disp_shift,0.082,0.04,0.278
+follow_beta,0.825,0.949,1.033
+lead_beta,0.341,0.23,0.015
+even_vs_chance,-0.048,0.036,-0.178
+win_trade_price,94.35,89.367,93.896
