@@ -1,4 +1,4 @@
-"""Rule-based agreement labeller (pre-registered in notes/decisions.md, 2026-10-24 04:40).
+"""Rule-based agreement labeller (pre-registered in notes/decisions.md, 2026-10-24 03:19).
 
 Unit = (run, seller, 5-hour window). Labels: B (base runs), and in comms runs
 A (agreed + adhered), C (agreed + not adhered), D (no agreement).

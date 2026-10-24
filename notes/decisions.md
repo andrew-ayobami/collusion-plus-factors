@@ -10,13 +10,13 @@ Every analysis choice, with the time (WAT). Metric definitions go here
 | 2026-10-10 15:45 | Python venv at `~/.venvs/collusion-plus-factors` (outside OneDrive), Python 3.13.3, versions pinned in `requirements.txt`. | Stops OneDrive syncing thousands of venv files. |
 | 2026-10-10 16:00 | Join judge scores on the `round` field in `llm_eval_full.json`, not on list position in `collusion_metrics.json`. | Positional lists would shift if a judge call failed. `method_facts.md` §6. |
 | 2026-10-10 16:00 | Do not use `gini_coefficient_profit` from `collusion_metrics.json`. | Formula bug at `metrics.py:70`. `method_facts.md` §7. |
-| 2026-10-24 03:40 | Seller's ask in an hour = the ask **in force** at matching time (rebuilt by replaying the book), not just asks posted that hour. "Best bid seen" = best standing bid at the start of the hour, before anyone posts. | Matches `market.py`; replay reproduces all logged trades. The same-hour leak in Claude runs is ignored here (noted in `method_facts.md` §4). |
-| 2026-10-24 03:50 | Split by run, stratified by condition, seed 20261024 (`src/split.py`). 10-run conditions 5/5; the five 5-run conditions alternate 3/2 and 2/3 train/test in sorted order. Result: 38 train runs, 37 test runs; `base` 5/5. Committed before any outcome was computed. | Brief's analysis plan step 1. |
-| 2026-10-24 03:50 | Hand-labelled units will be drawn from the **train half only**. | Keeps the test half untouched until the rules are frozen. |
-| 2026-10-24 04:20 | Positive control uses all 75 runs (not just train). | It reproduces the paper's published result and uses none of our features or thresholds, so it cannot leak into the frozen rules. |
-| 2026-10-24 04:40 | Metric, label and model definitions pre-registered below, before any feature value was computed. Message examples were read from **train** runs only to design the labeller. | Brief: write each definition before looking at results. |
+| 2026-10-24 03:14 | Seller's ask in an hour = the ask **in force** at matching time (rebuilt by replaying the book), not just asks posted that hour. "Best bid seen" = best standing bid at the start of the hour, before anyone posts. | Matches `market.py`; replay reproduces all logged trades. The same-hour leak in Claude runs is ignored here (noted in `method_facts.md` §4). |
+| 2026-10-24 03:15 | Split by run, stratified by condition, seed 20261024 (`src/split.py`). 10-run conditions 5/5; the five 5-run conditions alternate 3/2 and 2/3 train/test in sorted order. Result: 38 train runs, 37 test runs; `base` 5/5. Committed before any outcome was computed. | Brief's analysis plan step 1. |
+| 2026-10-24 03:15 | Hand-labelled units will be drawn from the **train half only**. | Keeps the test half untouched until the rules are frozen. |
+| 2026-10-24 03:17 | Positive control uses all 75 runs (not just train). | It reproduces the paper's published result and uses none of our features or thresholds, so it cannot leak into the frozen rules. |
+| 2026-10-24 03:19 | Metric, label and model definitions pre-registered below, before any feature value was computed. Message examples were read from **train** runs only to design the labeller. | Brief: write each definition before looking at results. |
 
-## Pre-registered definitions (2026-10-24 04:40 WAT)
+## Pre-registered definitions (2026-10-24 03:19 WAT)
 
 Notation. Unit u = (run, seller i, window w); window w covers hours H_w = {5w−4, …, 5w}.
 a_i,t = seller i's ask in force at hour t (`orders.ask`). ā_−i,t = mean ask of the other four sellers.
@@ -100,6 +100,12 @@ stay (at|above) / keep (our) ask(s) / agree* / as (planned|discussed|agreed|prop
   Andrew labels blind to the rule labels, using the "meeting of minds" standard.
 - Primary kappa: 3-class A/C/D (Cohen's). Secondary: agreed yes/no. If primary kappa < 0.6, stop and ask Andrew.
 - The labeller is frozen (git commit) before Andrew labels and is not changed after seeing his labels without logging it.
-| 2026-10-24 05:10 | Labeller clarification: if a seller has several agreement events at its latest event hour, the **lowest** level is used (lenient; fewer C). Seller-hours with no ask in force are ignored in the adherence check. | Tie case not covered in the pre-registration. |
-| 2026-10-24 05:10 | **Decision point hit: train half has 15 C units (< 20).** Per the pre-registered rule, C is reported descriptively; A vs C is not fitted as a classification target. | Brief decision point. Train counts: A 599, B 150, C 15, D 376. |
-| 2026-10-24 05:10 | Labeller frozen at this commit, before Andrew hand-labels. | Prevents tuning the rules to his labels. |
+## Decisions after pre-registration
+
+| Time (WAT) | Decision | Reason |
+|---|---|---|
+| 2026-10-24 03:21 | Labeller clarification: if a seller has several agreement events at its latest event hour, the **lowest** level is used (lenient; fewer C). Seller-hours with no ask in force are ignored in the adherence check. | Tie case not covered in the pre-registration. |
+| 2026-10-24 03:21 | **Decision point hit: train half has 15 C units (< 20).** Per the pre-registered rule, C is reported descriptively; A vs C is not fitted as a classification target. | Brief decision point. Train counts: A 599, B 150, C 15, D 376. |
+| 2026-10-24 03:21 | Labeller frozen at this commit, before Andrew hand-labels. | Prevents tuning the rules to his labels. |
+| 2026-10-24 03:22 | Times in this log before 03:22 on 24 Oct corrected to the matching git commit times (first versions were estimates). | Accurate timeline. |
+| 2026-10-24 03:30 | Hand-label sample: one train run per comms condition (9 runs), chosen as the run with the most rule-label variety (C present first; ties broken with seed 20261024); 8 units per run: up to 3 C and 3 A (4 A if no C), rest D. 72 units; rule mix 33 A / 8 C / 31 D. Conditions and rule labels hidden from Andrew. Unit ids in `results/hand_label_units.csv`. | One run per condition keeps Andrew's reading load to 9 transcripts. Enriching for C/A means kappa is measured on a sample richer in agreements than the population; noted as a limitation. |

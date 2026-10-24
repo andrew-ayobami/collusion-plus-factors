@@ -16,3 +16,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Local tool config
+.claude/
