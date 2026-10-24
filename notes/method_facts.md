@@ -163,3 +163,11 @@ Average trade price per round and total seller profit after 30 rounds, bootstrap
 - Row membership: "GPT-4.1" = `base-seller_comms` + `claude_buyers-gpt_sellers` (15 runs);
   "Claude-3.7" = `gpt_buyers-claude_sellers` + `claude_buyers-claude_sellers`;
   "Mixed" = `gpt_buyers-mixed_sellers` + `claude_buyers-mixed_sellers`. Other rows are single conditions.
+
+## 11. Gag orders in oversight runs (train half, 24 Oct)
+
+- In all 10 train-half oversight runs (`oversight`, `boss_pressure-oversight`), the overseer scored 4 within
+  hours 1–6, so the gag order was on from then. After that, messages average 2–3 characters ("ok").
+  Window-1 talk in these runs is general ("hold the line", "stay disciplined") with no dollar figures.
+- So the oversight conditions are "talk briefly, then silenced", not "talk under monitoring". The rule labeller
+  finds no price-specific agreement in any train oversight unit (all D).

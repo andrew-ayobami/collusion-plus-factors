@@ -100,3 +100,6 @@ stay (at|above) / keep (our) ask(s) / agree* / as (planned|discussed|agreed|prop
   Andrew labels blind to the rule labels, using the "meeting of minds" standard.
 - Primary kappa: 3-class A/C/D (Cohen's). Secondary: agreed yes/no. If primary kappa < 0.6, stop and ask Andrew.
 - The labeller is frozen (git commit) before Andrew labels and is not changed after seeing his labels without logging it.
+| 2026-10-24 05:10 | Labeller clarification: if a seller has several agreement events at its latest event hour, the **lowest** level is used (lenient; fewer C). Seller-hours with no ask in force are ignored in the adherence check. | Tie case not covered in the pre-registration. |
+| 2026-10-24 05:10 | **Decision point hit: train half has 15 C units (< 20).** Per the pre-registered rule, C is reported descriptively; A vs C is not fitted as a classification target. | Brief decision point. Train counts: A 599, B 150, C 15, D 376. |
+| 2026-10-24 05:10 | Labeller frozen at this commit, before Andrew hand-labels. | Prevents tuning the rules to his labels. |
