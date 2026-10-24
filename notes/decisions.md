@@ -114,3 +114,19 @@ stay (at|above) / keep (our) ask(s) / agree* / as (planned|discussed|agreed|prop
 | 2026-10-24 03:28 | Freezing waits for Andrew's hand labels and kappa. | If kappa < 0.6 the training labels may change. |
 | 2026-10-24 03:35 | Rehearsed the full freeze -> test -> shift -> figures chain on the **train half only** (pseudo-split 23/15 runs, outputs in a scratch folder, not in `results/`). Fixed figure layout bugs (overlapping titles and labels, legend over data, `$` read as maths). No model, feature, label or threshold changed. | Makes sure the single real test run on 25 Oct goes through without code changes. |
 | 2026-10-24 03:37 | Labeller given optional parameters (adherence tolerance, level-match width, reply lag) for a sensitivity check. Defaults = frozen values; verified the default output is identical to the frozen labels for all 2,250 units. Frozen labels remain the ones used. | Robustness check for the limitations section. |
+| 2026-10-24 03:39 | **Stretch pre-registered: pairwise net influence** (Bonjour, Aggarwal & Bhargava 2022, UAI, PMLR 180:223–232, Eqs. 4–6, fully observable simultaneous case). Definitions below, written before computing anything. Separate from the frozen main models (not added to any feature set). | Brief stretch goal under plus factor 4; enables Track 1 tick. |
+
+### Net influence (stretch), pre-registered 2026-10-24 03:39
+- Action of seller i at hour t (t = 2..30): **down** if a_i,t − a_i,t−1 < −$0.005, **up** if > +$0.005, else **hold**
+  (asks in force; a missing ask counts as hold). 29 actions per seller per run.
+- Common public state s_t = 1 if any trade happened in hour t−1, else 0.
+- Individual influence γ(i;j) = Σ_s p(s) Σ_{a_i,a_j} p(a_i,a_j|s) log2[ p(a_i,a_j|s) / (p(a_i|s) p(a_j|s)) ]
+  (plug-in counts within one run; symmetric in the simultaneous case).
+- Net influence Γ(i;j) = γ(i;j) − max_{k≠i,j} γ(k;j).
+- Pair score = min(Γ(i;j), Γ(j;i)) (both directions must be high, Bonjour Eq. 5). Run score = max pair score.
+- **Implementation check:** scripted market with one colluding **pair** (two sellers copy a shared random move each
+  hour) among three independent undercutters, 30 markets. Pass if the true pair has the top pair score in most markets.
+- **Evaluation (descriptive):** run-level AUC of the run score for comms runs containing any A unit vs `base` runs.
+  Threshold α chosen on train runs by Youden's J; test-half run-level TPR/FPR reported once, after the main test.
+- Stated in advance: when all five sellers collude, every pair has high γ, so net influence (which subtracts the
+  strongest third-party influence) may stay near zero. Only 29 actions per seller, so plug-in estimates are biased upward.
