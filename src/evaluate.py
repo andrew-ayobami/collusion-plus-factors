@@ -198,7 +198,11 @@ def test(u=None, reading: str = "words"):
                                       (t["negative"] if not gy.any() else "mixed")))
             if name in sd:
                 flag = sd[name] >= 0.5
-                d_rows.append(dict(task=task, scorer=name, n_D=len(dd), fpr_D=flag.mean()))
+                d_rows.append(dict(task=task, scorer=name, group="D (all)", n=len(dd), flag_rate=flag.mean()))
+                for rung in ["D0", "D1", "D2"]:  # ladder rungs inside D (codebook v2)
+                    sel = (dd.ladder == rung).to_numpy()
+                    d_rows.append(dict(task=task, scorer=name, group=rung, n=int(sel.sum()),
+                                       flag_rate=flag[sel].mean() if sel.any() else np.nan))
     d, y = task_data(te, "A", "B")
     pd.DataFrame([dict(feature=f, auc_AvB=roc_auc_score(y, d[f])) for f in ALL_FEATURES]).round(4).to_csv(
         RESULTS / f"test_feature_auc{sfx}.csv", index=False)

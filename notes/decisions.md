@@ -178,3 +178,29 @@ Messages are split into sentences as in v1; a **price** is a dollar figure in (8
 
 | Time (WAT) | Decision | Reason |
 |---|---|---|
+| 2026-10-24 21:49 | Codebook v2 (Andrew's request, review points 1-5 and smaller gaps) drafted into `notes/codebook.md`, uncommitted for Andrew to review and commit. Labeller updated to match **before any hand label was seen**: stated end of an agreement (end hour, or a fixed term of >= 2 hours, read from the invitation sentence; "for one more hour" is not an end); a later-hour reply counts as assent only if an assent sentence names the invited level (references by author are missed); invitation flag per unit (Rule 6). Conditional plans are treated as binding at once (labeller limitation). Train labels did not change (A 554, B 150, C 19, D 417). 30 codebook checks in `tests/test_labels.py`. | Andrew: integrate all review points. |
+| 2026-10-24 21:49 | Hand-label sheet: agreement yes/no/**unclear** and an **invitation** field; same storage key, so entries already made are kept. **Recheck sheet**: 10 of the 72 units, drawn once with seed 20261025 (`results/hand_label_recheck_units.csv`), run numbers reshuffled, separate storage, to be labelled a few hours after the main sheet. | Codebook v2, How to label steps 4, 6, 7. |
+| 2026-10-24 21:49 | Kappa additions: primary kappa on agreement uses yes/no units only (unclear excluded); also reported with unclear counted as no. New: invitation-flag kappa; ladder-rung kappa (hand rung: agreement / D2 invitation / D1 vague / D0); intra-rater kappa from the recheck. Stop-and-ask threshold still applies to the primary kappa. | Codebook v2. |
+| 2026-10-24 21:49 | **Ladder of communication evidence pre-registered** (definitions below). The code was written before this entry, and a code rehearsal on the **train half only** (pseudo-split, scratch folder) printed train-half rung means before this entry was logged. Definitions were not changed after that. | Andrew's proposal; honest timing note. |
+
+## Ladder of communication evidence (2026-10-24 21:49)
+
+- Rungs per unit (main, words reading): **B** no talk possible (`base`); **D0** talk without coordination content
+  (no vague talk and no invitation from this seller in this window; includes gagged "ok"); **D1** vague talk only
+  (VAGUE in this window, no invitation); **D2** invitation not accepted (made an invitation in this window, not a party
+  to any agreement); **agreement** = A + C (party to an agreement at some hour of the window; carry-over applies).
+- D rungs use this window's messages only; agreement carries over (Rule 5). A, C, B and the frozen A-vs-B models are
+  unchanged; the ladder only splits D for reporting.
+- Outcomes: primary `ask_minus_ce` (seller's mean ask - $90 in the window); secondary window trade price and buyer
+  surplus per trade. All 75 runs, computed once **after** the main test run (`python -m src.figures`, guarded).
+- Inference: rung means and adjacent-step differences (B->D0, D0->D1, D1->D2, D2->agreement) with 95% CIs from
+  2,000 bootstrap resamples of runs within condition (seed 20261026). Also a rung x condition table of mean asks
+  and counts, because rungs are confounded with condition.
+- Known confound, stated in advance: in the train half, 262 of 263 D0 units come from the gagged oversight runs, so
+  the D0 step largely reflects being silenced by the overseer, not choosing not to coordinate.
+- The A-vs-B models' flag rates are also reported for each D rung (`results/test_fpr_on_D.csv`).
+
+## Decisions after the ladder pre-registration
+
+| Time (WAT) | Decision | Reason |
+|---|---|---|

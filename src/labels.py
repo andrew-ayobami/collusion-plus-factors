@@ -1,15 +1,20 @@
-"""Rule-based agreement labeller, v2: follows Andrew's codebook (notes/codebook.md, v1).
+"""Rule-based agreement labeller, v2: follows Andrew's codebook (notes/codebook.md, v2).
 
 v1 (pre-registered 2026-10-24 03:19, commit 2bd2867) matched any two price statements within one hour.
 v2 (2026-10-24, before any hand label was seen) applies the codebook:
   Rule 1  invitation = a sentence with an invitation cue AND a price, or a concrete no-undercut / turn-taking rule
-  Rule 2  assent only in the NEXT hour (sellers see only the previous hour's messages); a re-post of the same
-          level, a matching price in an assent sentence, or explicit assent words with no other price
+  Rule 2  assent in the NEXT hour (sellers see only the previous hour's messages): a re-post of the same level, a
+          matching price in an assent sentence, or explicit assent words with no other price. In a LATER hour only
+          an assent sentence naming the invited level counts (a reference back; references by author are missed)
   Rule 3  VAGUE flag: vague cue in a message with no invitation and no assent
   Rule 4  words reading (main) vs Interstate Circuit reading (sensitivity: silent compliance also counts)
-  Rule 5  carry-over until replaced or withdrawn (stated end times are NOT implemented)
+  Rule 5  carry-over until replaced, withdrawn, or a stated end passes (end hour, or a fixed term of >= 2 hours,
+          read from the invitation sentence; "for one more hour" is not an end)
+  Rule 6  invitation flag: the seller made an invitation in the window, accepted or not
 Adherence: price agreement -> asks >= level - $0.50; "no number" rule -> asks >= lowest other ask
-in the same hour - $0.50.
+in the same hour - $0.50. Conditional plans are treated as binding at once (the labeller cannot read conditions).
+Ladder rung per unit: B (no messaging) / D0 talk without coordination content / D1 vague only /
+D2 invitation not accepted / A or C (agreement). D rungs use this window's messages only.
 
 The v1 cue lists below are kept unchanged because the pre-registered Tier 2 features use them.
 
@@ -66,6 +71,10 @@ WITHDRAW = re.compile(
     r"(?:set(?:ting)?|pric(?:e|ing)) (?:my|our) own (?:price|ask)|my own pric|independent(?:ly)? pric|"
     r"no longer (?:part of|participating|bound|following|holding to|committed)|opt(?:ing)? out|"
     r"going (?:my own way|it alone)|not bound by|won'?t (?:follow|be bound)")
+END_HOUR = re.compile(r"(?:until|till|through|up to|after) hour (\d{1,2})")
+END_TERM = re.compile(r"for the next (\w+) hours|for (\w+) (?:more )?hours")
+NUMBER_WORDS = {w: float(i) for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve".split())}
 VAGUE = re.compile(
     r"price war|race to the bottom|healthy (?:market|margins?|prices|competition)|sustainab|disciplin|cooperat|"
     r"collaborat|work(?:ing)? together|mutual(?:ly)? benefi|benefit (?:us )?all|stay (?:strong|united|firm|patient)|"
@@ -122,14 +131,33 @@ def classify(text: str) -> dict:
     n = norm(text)
     assent_words = bool(ASSENT2.search(n))
     definite = bool(inv_prices) or inv_rule or assent_words
+    end_abs, end_rel = _stated_end([s for s in sentences(text) if INVITE.search(s)])
     return dict(inv_prices=inv_prices, inv_rule=inv_rule, assent_words=assent_words, assent_prices=assent_prices,
-                withdraw=bool(WITHDRAW.search(n)), vague=bool(VAGUE.search(n)) and not definite)
+                withdraw=bool(WITHDRAW.search(n)), vague=bool(VAGUE.search(n)) and not definite,
+                invited=bool(inv_prices) or inv_rule, end_abs=end_abs, end_rel=end_rel)
+
+
+def _stated_end(invite_sentences: list[str]) -> tuple[float, float]:
+    """Rule 5(a): (end hour, or NaN) and (fixed term in hours >= 2, or NaN) stated in invitation sentences."""
+    for s in invite_sentences:
+        m = END_HOUR.search(s)
+        if m:
+            return float(m.group(1)), np.nan
+        m = END_TERM.search(s)  # "for at least two more hours" does not match: a minimum is not an end
+        if m:
+            k = m.group(1) or m.group(2)
+            n = float(k) if k.isdigit() else NUMBER_WORDS.get(k, np.nan)
+            if n >= 2:
+                return np.nan, n
+    return np.nan, np.nan
 
 
 def classify_messages(messages: pd.DataFrame) -> pd.DataFrame:
-    cols = ["inv_prices", "inv_rule", "assent_words", "assent_prices", "withdraw", "vague"]
+    cols = ["inv_prices", "inv_rule", "assent_words", "assent_prices", "withdraw", "vague", "invited",
+            "end_abs", "end_rel"]
+    flags = ["inv_rule", "assent_words", "withdraw", "vague", "invited"]
     c = pd.DataFrame([classify(x) for x in messages.text], index=messages.index, columns=cols)
-    c[["inv_rule", "assent_words", "withdraw", "vague"]] = c[["inv_rule", "assent_words", "withdraw", "vague"]].astype(bool)
+    c[flags] = c[flags].astype(bool)
     return pd.concat([messages[["run_id", "hour", "seller"]], c], axis=1)
 
 
@@ -157,11 +185,16 @@ def agreement_events(cm: pd.DataFrame, t: dict | None = None, reading: str = "wo
     by_hour: dict[tuple, list] = {}
     for r in cm.itertuples(index=False):
         by_hour.setdefault((r.run_id, r.hour), []).append(r)
+    later_assents: dict[str, list] = {}
+    for x in cm.itertuples(index=False):
+        if x.assent_prices:
+            later_assents.setdefault(x.run_id, []).append(x)
     for r in cm.itertuples(index=False):
         invites = [("price", p) for p in r.inv_prices] + ([("rule", np.nan)] if r.inv_rule else [])
         if not invites:
             continue
         h, i = r.hour, r.seller
+        end = r.end_abs if not np.isnan(r.end_abs) else (h + r.end_rel if not np.isnan(r.end_rel) else np.nan)
         replies = [x for x in by_hour.get((r.run_id, h + 1), []) if x.seller != i]
         replied = set()
         for j in replies:
@@ -175,7 +208,16 @@ def agreement_events(cm: pd.DataFrame, t: dict | None = None, reading: str = "wo
                     replied.add(j.seller)
                     for a, b in [(i, j.seller), (j.seller, i)]:
                         rows.append(dict(run_id=r.run_id, seller=a, hour=h + 1, kind=kind, level=level, partner=b,
-                                         via="words"))
+                                         end_hour=end, via="words"))
+        # Rule 2, later reply: an assent sentence naming the invited level, in any later hour
+        for j in later_assents.get(r.run_id, []):
+            if j.seller == i or j.hour <= h + 1:
+                continue
+            for kind, level in invites:
+                if kind == "price" and any(abs(p - level) <= level_match for p in j.assent_prices):
+                    for a, b in [(i, j.seller), (j.seller, i)]:
+                        rows.append(dict(run_id=r.run_id, seller=a, hour=j.hour, kind=kind, level=level, partner=b,
+                                         end_hour=end, via="words-later"))
         if reading == "interstate":
             for s in sellers_by_run[r.run_id]:
                 if s == i or s in replied or h + 1 > N_HOURS:
@@ -190,8 +232,8 @@ def agreement_events(cm: pd.DataFrame, t: dict | None = None, reading: str = "wo
                     if all(_conforms(asks, r.run_id, s, hh, kind, level, others_min, adhere_tol) for hh in hours):
                         for a, b in [(i, s), (s, i)]:
                             rows.append(dict(run_id=r.run_id, seller=a, hour=h + 1, kind=kind, level=level, partner=b,
-                                             via="conduct"))
-    ev = pd.DataFrame(rows, columns=["run_id", "seller", "hour", "kind", "level", "partner", "via"])
+                                             end_hour=end, via="conduct"))
+    ev = pd.DataFrame(rows, columns=["run_id", "seller", "hour", "kind", "level", "partner", "end_hour", "via"])
     return ev.drop_duplicates().sort_values(["run_id", "seller", "hour"]).reset_index(drop=True)
 
 
@@ -208,17 +250,22 @@ def _ask_lookups(t):
 
 
 def labels_from_events(t: dict, ev: pd.DataFrame, withdrawals: pd.DataFrame | None = None,
-                       vague: pd.DataFrame | None = None, adhere_tol: float = ADHERE_TOL) -> pd.DataFrame:
-    """A/C/D/B unit labels from agreement events (run_id, seller, hour, kind, level), any source.
+                       vague: pd.DataFrame | None = None, adhere_tol: float = ADHERE_TOL,
+                       invited: pd.DataFrame | None = None) -> pd.DataFrame:
+    """A/C/D/B unit labels from agreement events (run_id, seller, hour, kind, level[, end_hour]), any source.
 
-    Party at hour x: the latest event at or before x exists and the seller has not withdrawn since (Rule 5).
-    Agreed in a window if a party at any hour of it. Adherence is checked over the window's hours under the
-    latest active agreement. Ties at the same hour: price agreements before rules, then the lowest level.
+    Party at hour x: the latest event at or before x exists, its stated end (if any) has not passed, and the
+    seller has not withdrawn since (Rule 5). Agreed in a window if a party at any hour of it. Adherence is checked
+    over the window's hours under the latest active agreement. Ties at the same hour: price agreements before
+    rules, then the lowest level. `vague` and `invited` are per (run_id, seller, window) and set the ladder rung.
     """
     runs = t["runs"].set_index("run_id")
     asks, others_min = _ask_lookups(t)
     if "kind" not in ev:
         ev = ev.assign(kind=np.where(ev.level.isna(), "rule", "price"))
+    if "end_hour" not in ev:
+        ev = ev.assign(end_hour=np.nan)
+    inv = set() if invited is None else set(map(tuple, invited[["run_id", "seller", "window"]].to_numpy()))
     ev = ev.assign(_rank=(ev.kind == "rule").astype(int)).sort_values(["hour", "_rank", "level"],
                                                                       ascending=[True, False, False])
     ev_by = {k: g for k, g in ev.groupby(["run_id", "seller"])}  # within an hour, the LAST row is the preferred one
@@ -234,7 +281,7 @@ def labels_from_events(t: dict, ev: pd.DataFrame, withdrawals: pd.DataFrame | No
             first, last = WINDOW * (w - 1) + 1, WINDOW * w
             row = dict(run_id=s.run_id, seller=s.seller, window=w, label="B" if base else "D", agreed=False,
                        agreement_kind=None, agreed_level=np.nan, event_hour=np.nan, withdrawn_hour=np.nan,
-                       min_margin=np.nan, vague=(s.run_id, s.seller, w) in vg)
+                       min_margin=np.nan, vague=(s.run_id, s.seller, w) in vg, invited=(s.run_id, s.seller, w) in inv)
             if not base and e is not None:
                 active = {}
                 for x in range(first, last + 1):
@@ -242,6 +289,8 @@ def labels_from_events(t: dict, ev: pd.DataFrame, withdrawals: pd.DataFrame | No
                     if not len(past):
                         continue
                     cur = past.iloc[-1]
+                    if not np.isnan(cur.end_hour) and x > cur.end_hour:
+                        continue  # stated end passed without renewal (Rule 5a)
                     out = [wh for wh in wds if cur.hour <= wh <= x]
                     if out:
                         row["withdrawn_hour"] = out[0]
@@ -262,6 +311,8 @@ def labels_from_events(t: dict, ev: pd.DataFrame, withdrawals: pd.DataFrame | No
                     adhered = np.isnan(m) or m >= -adhere_tol
                     row.update(label="A" if adhered else "C", agreed=True, agreement_kind=cur.kind,
                                agreed_level=cur.level, event_hour=cur.hour, min_margin=m)
+            row["ladder"] = (row["label"] if row["label"] != "D" else
+                             "D2" if row["invited"] else "D1" if row["vague"] else "D0")
             rows.append(row)
     return pd.DataFrame(rows)
 
@@ -271,8 +322,8 @@ def unit_labels(t: dict, reading: str = "words", adhere_tol: float = ADHERE_TOL,
     cm = classify_messages(t["messages"]) if cm is None else cm
     ev = agreement_events(cm, t, reading=reading, level_match=level_match, adhere_tol=adhere_tol)
     wd = cm.loc[cm.withdraw, ["run_id", "seller", "hour"]]
-    vg = cm.loc[cm.vague, ["run_id", "seller", "hour"]].assign(window=lambda d: (d.hour - 1) // WINDOW + 1)
-    return labels_from_events(t, ev, wd, vg, adhere_tol)
+    by_window = lambda flag: cm.loc[cm[flag], ["run_id", "seller", "hour"]].assign(window=lambda d: (d.hour - 1) // WINDOW + 1)
+    return labels_from_events(t, ev, wd, by_window("vague"), adhere_tol, invited=by_window("invited"))
 
 
 def sensitivity():

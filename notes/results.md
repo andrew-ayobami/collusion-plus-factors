@@ -130,3 +130,10 @@ Train-only 5-fold CV by run, A vs B (`python -m src.evaluate dryrun [interstate]
 | T1+T2+T3 | 0.996 | 0.991 | 0.060 | 0.966 | 0.935 | 0.173 |
 
 Net influence (v2 labels, train): run-level AUC 0.764 (22 comms runs with any A vs 5 `base`); alpha = 0.0950 bits.
+
+## Codebook v2 labeller additions (train half)
+
+- Stated ends and later-hour replies changed **no** train labels (A 554, B 150, C 19, D 417).
+- Ladder rungs (train): B 150, D0 263, D1 117, D2 37, A 554, C 19. 262 of the 263 D0 units are in the gagged
+  oversight runs (`oversight`, `boss_pressure-oversight`).
+- Sensitivity grid rerun (`results/labeller_sensitivity_train.csv`): words-reading C ranges 15-50 across settings.

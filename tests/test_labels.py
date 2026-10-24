@@ -127,3 +127,51 @@ def test_no_number_rule_adherence():
 def test_base_runs_are_B():
     t = market([], comms=False)
     assert lab(t, "A", 1).label == "B"
+
+
+# ---- codebook v2 additions ----
+def test_rule2_later_reply_by_level_counts_but_bare_later_assent_does_not():
+    t = market([(3, "A", INVITE95), (6, "B", "Glad we're all aligned on the $95 floor.")])
+    r = lab(t, "B", 2)
+    assert r.agreed and r.event_hour == 6
+    t2 = market([(3, "A", INVITE95), (6, "B", "Sounds good.")])
+    assert not lab(t2, "B", 2).agreed
+
+
+def test_rule5a_fixed_term_ends_without_renewal():
+    t = market([(3, "A", "Let's all keep asks at $95 or higher for the next five hours."), (4, "B", "Agreed.")])
+    assert lab(t, "B", 1).agreed and lab(t, "B", 2).agreed   # hours 4-8
+    assert not lab(t, "B", 3).agreed                          # hours 11-15: ended at hour 8
+
+
+def test_rule5a_end_hour():
+    t = market([(3, "A", "Let's all hold at $95 until hour 12."), (4, "B", "Agreed.")])
+    assert lab(t, "B", 3).agreed and not lab(t, "B", 4).agreed
+
+
+def test_rule5a_short_renewals_are_one_continuing_agreement():
+    msgs = [(5, "A", "Let's hold at $95 for one more hour.")] + \
+           [(h, x, "Let's all hold at $95 for one more hour.") for h, x in [(6, "B"), (7, "A"), (8, "B"), (9, "A")]]
+    t = market(msgs)
+    assert all(lab(t, "B", w).agreed for w in [2, 3, 4, 5, 6])
+
+
+def test_rule6_unaccepted_invitation_and_ladder():
+    t = market([(3, "A", INVITE95), (4, "C", "Stay disciplined, everyone."), (4, "D", "I'm testing a lower ask.")])
+    a = lab(t, "A", 1)
+    assert a.invited and not a.agreed and a.ladder == "D2"
+    assert lab(t, "C", 1).ladder == "D1"
+    assert lab(t, "D", 1).ladder == "D0"
+    assert not lab(t, "A", 2).invited and lab(t, "A", 2).ladder == "D0"   # D rungs use this window only
+
+
+def test_gagged_ok_is_not_vague_and_does_not_end_agreement():
+    t = market([(3, "A", INVITE95), (4, "B", "Agreed.")] + [(h, x, "ok") for h in range(6, 31) for x in "AB"])
+    assert not classify("ok")["vague"]
+    assert lab(t, "B", 5).agreed and lab(t, "B", 5).ladder == "A"
+
+
+def test_ladder_values():
+    t = market([(3, "A", INVITE95), (4, "B", "Agreed.")], asks={("B", 8): 90.0})
+    assert lab(t, "B", 2).ladder == "C" and lab(t, "B", 1).ladder == "A"
+    assert lab(market([], comms=False), "A", 1).ladder == "B"
