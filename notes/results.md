@@ -137,3 +137,22 @@ Net influence (v2 labels, train): run-level AUC 0.764 (22 comms runs with any A 
 - Ladder rungs (train): B 150, D0 263, D1 117, D2 37, A 554, C 19. 262 of the 263 D0 units are in the gagged
   oversight runs (`oversight`, `boss_pressure-oversight`).
 - Sensitivity grid rerun (`results/labeller_sensitivity_train.csv`): words-reading C ranges 15-50 across settings.
+
+## Hand labels vs rule labeller (`results/kappa.json`, `results/hand_labels.csv`)
+
+Kappa = agreement beyond chance (1 = perfect, 0 = chance level; 0.6+ is usually read as substantial).
+
+| Measure | Kappa | n |
+|---|---|---|
+| **Agreement yes/no (primary)** | **0.886** | 70 (2 unclear excluded) |
+| Agreement, unclear counted as no | 0.861 | 72 |
+| A/C/D (Andrew's agreement + level, labeller's adherence rule) | 0.793 | 70 |
+| Ladder rung (agreement / D2 / D1 / D0) | 0.739 | 70 |
+| Invitation flag | 0.684 | 72 |
+| VAGUE flag | 0.476 | 72 |
+| Agreement vs Interstate-reading rule labels | 0.613 | 70 |
+
+- Raw agreement on agreement yes/no: 94.3%. Confusion: rule yes/hand yes 34, rule no/hand no 32, rule no/hand yes 4,
+  rule yes/hand no 0. The rule labeller misses some agreements; it never invents one Andrew did not see.
+- Raw agreement by condition: 1.0 in 7 of 9 conditions; 0.75 in `boss_pressure` and `claude_buyers-gpt_sellers`.
+- The `level` field was checked with an AI tool (see decisions log); it affects only the A/C/D kappa.

@@ -279,6 +279,8 @@ def kappa():
             columns={"agreed": "agreed_rule", "vague": "vague_rule", "invited": "invited_rule", "ladder": "ladder_rule"}),
         on="unit_id")
     m = m.merge(rule_ic[["unit_id", "agreed"]].rename(columns={"agreed": "agreed_ic"}), on="unit_id")
+    if "original_label" not in m:  # column absent from the CSV = no label changed after discussion
+        m["original_label"] = ""
     yn = m[m.agreement.isin(["yes", "no"])]
     agreed_hand = yn.agreement == "yes"
     acd = yn.assign(acd_hand=yn.unit_id.map(_hand_acd(t, yn))).dropna(subset=["acd_hand"])
