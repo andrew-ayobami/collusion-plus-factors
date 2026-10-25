@@ -211,3 +211,27 @@ Messages are split into sentences as in v1; a **price** is a dollar figure in (8
 | 2026-10-25 07:01 | **Rules frozen** on the train half: `results/frozen_rules.json` (words reading; task A vs B only, train C = 19 < 20) and `results/frozen_rules_interstate.json` (Interstate reading; A vs B and A vs C, train C = 47). Net influence alpha frozen earlier in `results/net_influence_frozen.json` (0.0950 bits). Committed before any test-half evaluation. | Analysis plan step 2. |
 | 2026-10-25 07:08 | **One-time test run done** (07:01-07:07): main reading, Interstate reading, model shift, net influence, figures and ladder, each run once in the pre-registered order, with no code or threshold changes in between. Outputs committed as produced. | Analysis plan step 3. |
 | 2026-10-25 07:10 | Ladder figure title shortened (it was clipped) and now says "raw means". Re-render used the same seed; all ladder CSVs byte-identical. Layout only. | Figure fix after the test; no number changed. |
+| 2026-10-25 07:33 | **Disclosure update (levels):** Andrew coded agreement, invitation and vague himself; after that, the `level` field was **produced by Claude** (an Anthropic chat model) from the message text, at Andrew's request, to save time. Effects: (1) the primary kappa (agreement yes/no) is unaffected; (2) the secondary A/C/D kappa (0.793) partly compares the rule labeller with AI-extracted levels, and both the rule labeller and those levels come from Claude models, so shared blind spots may inflate it; (3) message text from the unlicensed source data was shared with a third-party AI service. | Andrew's answer, 25 Oct. |
+| 2026-10-25 07:33 | Andrew confirms no hand label was changed after discussion (the missing `original_label` column means none). | Andrew's answer, 25 Oct. |
+| 2026-10-25 07:33 | **Exploratory (post-hoc) ladder analysis approved by Andrew, defined here before running.** Labelled exploratory everywhere because it was designed after the test results and the raw ladder were seen. Definitions below. | The pre-registered raw ladder is confounded by condition and time (`notes/results.md`). |
+
+## Exploratory ladder analysis (2026-10-25 07:33; post-hoc, after test results)
+
+Question: holding time and setting fixed, do asks rise as communication evidence climbs the ladder?
+- Outcome: `ask_minus_ce` (seller's mean ask - $90 in the window). All 75 runs. Units as in the main analysis.
+- **Spec 1, condition x window:** comms runs only; rungs D0 (reference), D1, D2, agreement (A + C). OLS of the outcome
+  on rung dummies with condition x window fixed effects, i.e. sellers are compared only with sellers in the same
+  condition and the same 5-hour window.
+- **Spec 2, run x window (tightest):** as spec 1, but with run x window fixed effects: sellers are compared only with
+  other sellers in the same market at the same time.
+- **Spec 3, B vs comms rungs within window:** all runs; rungs B (reference), D0, D1, D2, agreement; window fixed
+  effects only (B exists only in `base`, so condition cannot be held fixed for B).
+- Reported: each rung's coefficient vs the reference and adjacent steps (D0->D1, D1->D2, D2->agreement), with 95% CIs
+  from 2,000 bootstrap resamples of runs within condition (seed 20261027); number of units in cells that contain more
+  than one rung (only those identify the comparisons).
+- Code: `src/ladder_explore.py`; outputs `results/ladder_exploratory.csv`, `results/fig_ladder_exploratory.png`.
+
+## Decisions after the exploratory definition
+
+| Time (WAT) | Decision | Reason |
+|---|---|---|
