@@ -1,0 +1,13 @@
+step,outcome,diff,lo,hi
+B -> D0,ask_minus_ce,2.9613,1.3645,4.4667
+B -> D0,win_trade_price,1.53,-1.0074,3.8598
+B -> D0,win_buyer_surplus_per_trade,-1.53,-3.8598,1.0074
+D0 -> D1,ask_minus_ce,0.1658,-1.1859,1.6402
+D0 -> D1,win_trade_price,-2.787,-4.8736,-1.3018
+D0 -> D1,win_buyer_surplus_per_trade,2.787,1.3018,4.8736
+D1 -> D2,ask_minus_ce,-0.0525,-1.2688,1.0276
+D1 -> D2,win_trade_price,-0.1817,-1.2707,0.9879
+D1 -> D2,win_buyer_surplus_per_trade,0.1817,-0.9879,1.2707
+D2 -> AC,ask_minus_ce,-0.8521,-2.2322,0.5441
+D2 -> AC,win_trade_price,3.6563,2.3086,5.7047
+D2 -> AC,win_buyer_surplus_per_trade,-3.6563,-5.7047,-2.3086

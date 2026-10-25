@@ -1,0 +1,22 @@
+rung,name,outcome,n_units,n_runs,mean,lo,hi
+B,B: no talk possible,ask_minus_ce,300,10,0.1233,-1.2098,1.5661
+B,B: no talk possible,win_trade_price,300,10,88.1329,86.219,90.5076
+B,B: no talk possible,win_buyer_surplus_per_trade,300,10,11.8671,9.4924,13.781
+D0,"D0: talk, no coordination content",ask_minus_ce,519,21,3.0847,2.486,3.7147
+D0,"D0: talk, no coordination content",win_trade_price,519,21,89.663,88.5865,90.7568
+D0,"D0: talk, no coordination content",win_buyer_surplus_per_trade,519,21,10.337,9.2432,11.4135
+D1,D1: vague talk only,ask_minus_ce,236,54,3.2505,2.0296,4.6378
+D1,D1: vague talk only,win_trade_price,236,54,86.876,84.9808,87.9652
+D1,D1: vague talk only,win_buyer_surplus_per_trade,236,54,13.124,12.0348,15.0192
+D2,D2: invitation not accepted,ask_minus_ce,62,28,3.198,2.0333,4.4303
+D2,D2: invitation not accepted,win_trade_price,62,28,86.6943,84.6819,87.9409
+D2,D2: invitation not accepted,win_buyer_surplus_per_trade,62,28,13.3057,12.0591,15.3181
+AC,Agreement (A + C),ask_minus_ce,1133,44,2.3459,1.5541,3.0453
+AC,Agreement (A + C),win_trade_price,1133,44,90.3505,89.4313,91.2616
+AC,Agreement (A + C),win_buyer_surplus_per_trade,1133,44,9.6495,8.7384,10.5687
+A,A: agreement kept,ask_minus_ce,1094,44,2.4138,1.6432,3.104
+A,A: agreement kept,win_trade_price,1094,44,90.4653,89.5697,91.3588
+A,A: agreement kept,win_buyer_surplus_per_trade,1094,44,9.5347,8.6412,10.4303
+C,C: agreement broken,ask_minus_ce,39,13,0.4389,-1.1009,2.639
+C,C: agreement broken,win_trade_price,39,13,85.7804,84.7429,87.8495
+C,C: agreement broken,win_buyer_surplus_per_trade,39,13,14.2196,12.1505,15.2571

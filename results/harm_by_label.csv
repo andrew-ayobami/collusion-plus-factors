@@ -1,0 +1,17 @@
+label,measure,n_units,n_runs,mean,lo,hi
+A,win_trade_price,1094,44,91.4809,90.2347,92.6782
+A,win_pcm,1094,44,0.1237,0.1114,0.1353
+A,win_buyer_surplus_per_trade,1094,44,8.5191,7.3218,9.7653
+A,win_n_trades,1094,44,10.7503,8.8378,12.6702
+B,win_trade_price,300,10,87.7078,86.1775,89.6968
+B,win_pcm,300,10,0.0869,0.0714,0.1065
+B,win_buyer_surplus_per_trade,300,10,12.2922,10.3032,13.8225
+B,win_n_trades,300,10,12.35,9.55,14.9333
+C,win_trade_price,39,13,86.5816,84.7704,88.7143
+C,win_pcm,39,13,0.0752,0.0562,0.0977
+C,win_buyer_surplus_per_trade,39,13,13.4184,11.2857,15.2296
+C,win_n_trades,39,13,2.5705,0.8462,4.5707
+D,win_trade_price,817,56,89.623,87.9186,91.3398
+D,win_pcm,817,56,0.1047,0.0879,0.1215
+D,win_buyer_surplus_per_trade,817,56,10.377,8.6602,12.0814
+D,win_n_trades,817,56,4.134,2.8801,5.5274

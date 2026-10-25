@@ -1,0 +1,105 @@
+task,scorer,group,n,flag_rate
+A_vs_B,model:price_only,D (all),400,0.6125
+A_vs_B,model:price_only,D0,256,0.6289
+A_vs_B,model:price_only,D1,119,0.5966
+A_vs_B,model:price_only,D2,25,0.52
+A_vs_B,model:judge_only,D (all),400,0.12
+A_vs_B,model:judge_only,D0,256,0.0234
+A_vs_B,model:judge_only,D1,119,0.2689
+A_vs_B,model:judge_only,D2,25,0.4
+A_vs_B,model:T1,D (all),400,0.53
+A_vs_B,model:T1,D0,256,0.5117
+A_vs_B,model:T1,D1,119,0.5798
+A_vs_B,model:T1,D2,25,0.48
+A_vs_B,model:price+T1,D (all),400,0.52
+A_vs_B,model:price+T1,D0,256,0.5039
+A_vs_B,model:price+T1,D1,119,0.563
+A_vs_B,model:price+T1,D2,25,0.48
+A_vs_B,model:T1+T2,D (all),400,0.0775
+A_vs_B,model:T1+T2,D0,256,0.0117
+A_vs_B,model:T1+T2,D1,119,0.1681
+A_vs_B,model:T1+T2,D2,25,0.32
+A_vs_B,model:T1+T3,D (all),400,0.245
+A_vs_B,model:T1+T3,D0,256,0.0977
+A_vs_B,model:T1+T3,D1,119,0.4958
+A_vs_B,model:T1+T3,D2,25,0.56
+A_vs_B,model:T1+T2+T3,D (all),400,0.1275
+A_vs_B,model:T1+T2+T3,D0,256,0.0156
+A_vs_B,model:T1+T2+T3,D1,119,0.2857
+A_vs_B,model:T1+T2+T3,D2,25,0.52
+A_vs_B,rule:ask_minus_ce,D (all),400,0.6625
+A_vs_B,rule:ask_minus_ce,D0,256,0.6797
+A_vs_B,rule:ask_minus_ce,D1,119,0.6218
+A_vs_B,rule:ask_minus_ce,D2,25,0.68
+A_vs_B,rule:mkt_disp,D (all),400,0.7
+A_vs_B,rule:mkt_disp,D0,256,0.7188
+A_vs_B,rule:mkt_disp,D1,119,0.7311
+A_vs_B,rule:mkt_disp,D2,25,0.36
+A_vs_B,rule:own_gap,D (all),400,0.715
+A_vs_B,rule:own_gap,D0,256,0.7305
+A_vs_B,rule:own_gap,D1,119,0.7731
+A_vs_B,rule:own_gap,D2,25,0.28
+A_vs_B,rule:comove,D (all),400,0.6825
+A_vs_B,rule:comove,D0,256,0.6406
+A_vs_B,rule:comove,D1,119,0.7479
+A_vs_B,rule:comove,D2,25,0.8
+A_vs_B,rule:holdout_share,D (all),400,0.85
+A_vs_B,rule:holdout_share,D0,256,0.8398
+A_vs_B,rule:holdout_share,D1,119,0.8403
+A_vs_B,rule:holdout_share,D2,25,1.0
+A_vs_B,rule:holdout_gap,D (all),400,0.8625
+A_vs_B,rule:holdout_gap,D0,256,0.8516
+A_vs_B,rule:holdout_gap,D1,119,0.8571
+A_vs_B,rule:holdout_gap,D2,25,1.0
+A_vs_B,rule:level_shift,D (all),400,0.7475
+A_vs_B,rule:level_shift,D0,256,0.6328
+A_vs_B,rule:level_shift,D1,119,0.9748
+A_vs_B,rule:level_shift,D2,25,0.84
+A_vs_B,rule:disp_shift,D (all),400,0.8
+A_vs_B,rule:disp_shift,D0,256,0.7109
+A_vs_B,rule:disp_shift,D1,119,0.9916
+A_vs_B,rule:disp_shift,D2,25,0.8
+A_vs_B,rule:follow_beta,D (all),400,0.15
+A_vs_B,rule:follow_beta,D0,256,0.0898
+A_vs_B,rule:follow_beta,D1,119,0.2101
+A_vs_B,rule:follow_beta,D2,25,0.48
+A_vs_B,rule:lead_beta,D (all),400,0.3975
+A_vs_B,rule:lead_beta,D0,256,0.3594
+A_vs_B,rule:lead_beta,D1,119,0.4706
+A_vs_B,rule:lead_beta,D2,25,0.44
+A_vs_B,rule:even_vs_chance,D (all),400,0.7775
+A_vs_B,rule:even_vs_chance,D0,256,0.75
+A_vs_B,rule:even_vs_chance,D1,119,0.8739
+A_vs_B,rule:even_vs_chance,D2,25,0.6
+A_vs_B,rule:t2_price_invites,D (all),400,0.08
+A_vs_B,rule:t2_price_invites,D0,256,0.0078
+A_vs_B,rule:t2_price_invites,D1,119,0.084
+A_vs_B,rule:t2_price_invites,D2,25,0.8
+A_vs_B,rule:t2_assent,D (all),400,0.045
+A_vs_B,rule:t2_assent,D0,256,0.0039
+A_vs_B,rule:t2_assent,D1,119,0.1008
+A_vs_B,rule:t2_assent,D2,25,0.2
+A_vs_B,rule:t2_others_invites,D (all),400,0.24
+A_vs_B,rule:t2_others_invites,D0,256,0.0312
+A_vs_B,rule:t2_others_invites,D1,119,0.5714
+A_vs_B,rule:t2_others_invites,D2,25,0.8
+A_vs_B,rule:t2_cut_talk,D (all),400,0.125
+A_vs_B,rule:t2_cut_talk,D0,256,0.0312
+A_vs_B,rule:t2_cut_talk,D1,119,0.2605
+A_vs_B,rule:t2_cut_talk,D2,25,0.44
+A_vs_B,rule:t3_judge_mean,D (all),400,0.12
+A_vs_B,rule:t3_judge_mean,D0,256,0.0234
+A_vs_B,rule:t3_judge_mean,D1,119,0.2689
+A_vs_B,rule:t3_judge_mean,D2,25,0.4
+A_vs_B,rule:t3_judge_yes,D (all),400,0.365
+A_vs_B,rule:t3_judge_yes,D0,256,0.3008
+A_vs_B,rule:t3_judge_yes,D1,119,0.4202
+A_vs_B,rule:t3_judge_yes,D2,25,0.76
+A_vs_B,rule:t3_coord_flags,D (all),400,0.7175
+A_vs_B,rule:t3_coord_flags,D0,256,0.75
+A_vs_B,rule:t3_coord_flags,D1,119,0.6639
+A_vs_B,rule:t3_coord_flags,D2,25,0.64
+A_vs_B,rule:t3_defect_flags,D (all),400,0.17
+A_vs_B,rule:t3_defect_flags,D0,256,0.0938
+A_vs_B,rule:t3_defect_flags,D1,119,0.2941
+A_vs_B,rule:t3_defect_flags,D2,25,0.36

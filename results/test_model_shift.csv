@@ -1,0 +1,22 @@
+model,target,n,tpr,fpr
+price_only,"A units, claude sellers",110,0.2727,
+price_only,"A units, mixed sellers",85,0.1176,
+price_only,B units (gpt),150,,0.1867
+judge_only,"A units, claude sellers",110,0.7545,
+judge_only,"A units, mixed sellers",85,0.8118,
+judge_only,B units (gpt),150,,0.0
+T1,"A units, claude sellers",110,0.5364,
+T1,"A units, mixed sellers",85,0.3529,
+T1,B units (gpt),150,,0.2867
+price+T1,"A units, claude sellers",110,0.2273,
+price+T1,"A units, mixed sellers",85,0.2706,
+price+T1,B units (gpt),150,,0.1
+T1+T2,"A units, claude sellers",110,0.6818,
+T1+T2,"A units, mixed sellers",85,0.7765,
+T1+T2,B units (gpt),150,,0.0
+T1+T3,"A units, claude sellers",110,0.8909,
+T1+T3,"A units, mixed sellers",85,0.8588,
+T1+T3,B units (gpt),150,,0.0067
+T1+T2+T3,"A units, claude sellers",110,0.9,
+T1+T2+T3,"A units, mixed sellers",85,0.8588,
+T1+T2+T3,B units (gpt),150,,0.0

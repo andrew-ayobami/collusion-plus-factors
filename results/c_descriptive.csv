@@ -1,0 +1,8 @@
+condition,n_units,n_runs,mean_window,mean_shortfall_below_reference,mean_ask_minus_ce,mean_judge,mean_t2_cut_talk,mean_t3_defect_flags
+base-seller_comms,11.0,4.0,1.818,4.773,1.998,3.218,1.455,0.964
+claude_buyers-claude_sellers-seller_comms,4.0,1.0,1.5,1.5,3.745,2.9,0.0,0.8
+claude_buyers-gpt_sellers-seller_comms,1.0,1.0,2.0,1.2,6.0,4.0,3.0,0.4
+claude_buyers-mixed_sellers-seller_comms,5.0,3.0,3.4,0.946,2.558,3.68,0.4,0.84
+gpt_buyers-claude_sellers-seller_comms,4.0,1.0,1.5,9.028,-2.405,2.35,0.0,0.6
+gpt_buyers-mixed_sellers-seller_comms,14.0,3.0,2.714,2.831,-2.072,3.229,0.643,0.757
+ALL,39.0,13.0,2.282,3.594,0.439,3.179,0.769,0.805
