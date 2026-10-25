@@ -4,8 +4,14 @@ Apart Research AI Collusion Research Sprint, 23–25 Oct 2026. Track 2, question
 
 Data: Agrawal et al. (2025), arXiv 2507.01413,
 https://github.com/andyjliu/llm-agent-collusion at commit `2bb2a7e`.
-The data is not included in this repo. The analysis code here is new sprint work
-(see `PRIOR_WORK.md` for what existed before the sprint).
+The data is not included in this repo.
+
+**What was done before the sprint, and what during it.** Before the sprint (10 Oct 2026) only minimal setup was
+done: the project brief, the Python environment, a clone of the source data, reading the paper and its code (short
+factual notes in `notes/method_facts.md`), and one quick sanity check of mean trade prices. No analysis code was
+written or kept. All the research work was done during the sprint (24–25 Oct): the loader and tests, the train/test
+split, the controls, the plus-factor metrics, the agreement codebook, the rule labeller, the hand labels, the models
+and every result. The git history shows this timeline; `PRIOR_WORK.md` lists the pre-sprint items.
 
 ## Setup (Windows, Git Bash)
 

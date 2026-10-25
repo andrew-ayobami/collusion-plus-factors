@@ -22,8 +22,14 @@ Rule for Phase 0: setup, reading and planning only. No analysis code.
 
 `CLAUDE.md` records that the mean trade price was already computed before the
 sprint. This is a small piece of pre-sprint analysis and must be disclosed.
-The sprint loader in `src/load.py` will be written from scratch on 23 Oct.
+The sprint loader in `src/load.py` was written from scratch during the sprint (24 Oct, commit `2452c1d`).
 
 ## Agreement codebook (Andrew)
 
-_To be drafted by Andrew from the legal sources during Phase 0. Paste or link it here with the date._
+Not prior work. The codebook was planned for Phase 0 but was written during the sprint, on 24 Oct 2026:
+`notes/codebook.md`, v1 draft commit `95b9a8f`, v2 commit `bc278ee`.
+
+## Summary
+
+Pre-sprint work was limited to setup and reading (four commits on 10 Oct 2026, ending `42f201f`). Every analysis
+step, from the loader (`2452c1d`, 24 Oct) onward, was done during the sprint.
