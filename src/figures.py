@@ -204,7 +204,7 @@ def ladder(n_boot: int = 2000):
     ax.axvline(0, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
     ax.set_yticks(y, [LADDER_NAMES[k] for k in LADDER], color=INK, fontsize=9)
     ax.set_xlabel("Seller's mean ask minus the competitive price \\$90, per window (\\$)", color=INK2, fontsize=9)
-    ax.set_title("Ladder of communication evidence: asks by rung (all 75 runs, 95% CI over runs)", loc="left",
+    ax.set_title("Asks by ladder rung (all 75 runs, raw means, 95% CI over runs)", loc="left",
                  color=INK, fontsize=10)
     ax.set_xlim(min(np.nanmin(s.lo) - 0.5, -0.5), np.nanmax(s.hi) + 3)
     fig.tight_layout()

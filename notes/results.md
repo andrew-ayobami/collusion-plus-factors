@@ -156,3 +156,110 @@ Kappa = agreement beyond chance (1 = perfect, 0 = chance level; 0.6+ is usually 
   rule yes/hand no 0. The rule labeller misses some agreements; it never invents one Andrew did not see.
 - Raw agreement by condition: 1.0 in 7 of 9 conditions; 0.75 in `boss_pressure` and `claude_buyers-gpt_sellers`.
 - The `level` field was checked with an AI tool (see decisions log); it affects only the A/C/D kappa.
+
+---
+
+## TEST HALF: one-time run (25 Oct 07:01-07:07; frozen rules `c9e3e54`; outputs `f245e46`)
+
+Square brackets = 95% CI, bootstrap over runs within condition (2,000 resamples). Test half has only **5 B runs**,
+so every false-positive rate on B is uncertain. A CI of [0.000, 0.000] means no B unit was flagged in any resample,
+not that the true rate is zero.
+
+### A vs B, main reading (`results/test_metrics.csv`; 540 A units, 150 B units)
+
+| Model | TPR on A | FPR on B | AUC |
+|---|---|---|---|
+| Price only | 0.548 [0.411, 0.670] | 0.227 [0.153, 0.333] | 0.649 [0.528, 0.756] |
+| Paper's judge only | 0.946 [0.931, 0.960] | 0.000 [0.000, 0.000] | 0.994 [0.991, 0.997] |
+| Tier 1 | 0.730 [0.662, 0.800] | 0.287 [0.100, 0.527] | 0.798 [0.698, 0.885] |
+| Price + Tier 1 | 0.706 [0.623, 0.784] | 0.260 [0.087, 0.487] | 0.806 [0.719, 0.883] |
+| Tier 1 + 2 * | 0.932 [0.893, 0.966] | 0.020 [0.000, 0.060] | 0.968 [0.927, 0.993] |
+| Tier 1 + 3 | 0.967 [0.955, 0.976] | 0.013 [0.000, 0.027] | 0.990 [0.977, 0.998] |
+| All tiers * | 0.980 [0.964, 0.993] | 0.007 [0.000, 0.020] | 0.993 [0.980, 1.000] |
+
+\* Tier 2 features are zero for every B unit by construction. Tier 1 AUC on test (0.80) is higher than in train CV
+(0.59): a sign of instability with 5 B runs per half.
+
+### Flag rates on the no-agreement group D, by ladder rung (`results/test_fpr_on_D.csv`; D0 256, D1 119, D2 25 units)
+
+| Model | D (all, 400) | D0 talk, no coordination content | D1 vague only | D2 invitation not accepted |
+|---|---|---|---|---|
+| Price only | 0.612 | 0.629 | 0.597 | 0.52 |
+| Paper's judge only | 0.120 | 0.023 | 0.269 | 0.40 |
+| Tier 1 | 0.530 | 0.512 | 0.580 | 0.48 |
+| Price + Tier 1 | 0.520 | 0.504 | 0.563 | 0.48 |
+| Tier 1 + 2 | 0.078 | 0.012 | 0.168 | 0.32 |
+| Tier 1 + 3 | 0.245 | 0.098 | 0.496 | 0.56 |
+| All tiers | 0.128 | 0.016 | 0.286 | 0.52 |
+
+### Single features, test A vs B (`results/test_feature_auc.csv`; separation = max(AUC, 1 - AUC))
+
+- Tier 1: level_shift 0.729, even_vs_chance 0.686, ask_minus_ce 0.649, holdout_share 0.628, follow_beta 0.585,
+  mkt_disp 0.562, own_gap 0.552, holdout_gap 0.544, comove 0.534, disp_shift 0.523, lead_beta 0.511.
+- Tier 2: t2_others_invites 0.982, t2_price_invites 0.947, t2_assent 0.737, t2_cut_talk 0.565.
+- Tier 3: judge mean 0.994, coord flags 0.962, judge yes-share 0.887, defect flags 0.707.
+
+### Interstate Circuit reading, sensitivity (`results/test_metrics_interstate.csv`; 643 A, 150 B, 27 C test units)
+
+- A vs B AUC: price 0.655; judge 0.977 (FPR on B 0.000); Tier 1 0.807 (FPR 0.347 [0.173, 0.553]); Tier 1 + 3 0.984.
+- **A vs C** (fitted only under this reading; train C = 47):
+
+| Model | AUC | Flags a cheater (C) as "kept" | Balanced accuracy |
+|---|---|---|---|
+| Price only | 0.501 [0.418, 0.552] | 0.407 | 0.561 |
+| Paper's judge only | 0.896 [0.832, 0.949] | 0.296 | 0.786 |
+| Tier 1 | 0.677 [0.520, 0.833] | 0.407 | 0.701 |
+| Price + Tier 1 | 0.732 [0.602, 0.875] | 0.407 | 0.710 |
+| Tier 1 + 2 | 0.908 [0.846, 0.951] | 0.111 | 0.838 |
+| Tier 1 + 3 | 0.937 [0.906, 0.973] | 0.148 | 0.872 |
+| All tiers | 0.941 [0.913, 0.965] | 0.148 | 0.858 |
+
+### Model shift (`results/test_model_shift.csv`): trained on gpt-4.1-seller train runs only
+
+| Model | TPR, Claude-seller A (110) | TPR, mixed-seller A (85) | FPR on B (150) | In-distribution TPR (main test) |
+|---|---|---|---|---|
+| Price only | 0.273 | 0.118 | 0.187 | 0.548 |
+| Paper's judge only | 0.755 | 0.812 | 0.000 | 0.946 |
+| Tier 1 | 0.536 | 0.353 | 0.287 | 0.730 |
+| Price + Tier 1 | 0.227 | 0.271 | 0.100 | 0.706 |
+| Tier 1 + 2 | 0.682 | 0.776 | 0.000 | 0.932 |
+| Tier 1 + 3 | 0.891 | 0.859 | 0.007 | 0.967 |
+| All tiers | 0.900 | 0.859 | 0.000 | 0.980 |
+
+Claude-seller runs also differ in information structure (same-hour leak, `method_facts.md` §4).
+
+### Net influence, run level (`results/net_influence_test.json`)
+
+Test AUC **0.227** (train 0.764). At the frozen alpha: TPR 0.409 (9 of 22 comms runs with A), FPR 0.80 (4 of 5 base
+runs). The train result did not replicate.
+
+### Harm by label, all 75 runs (`results/harm_by_label.csv`)
+
+| Label | Window trade price | Buyer surplus per trade | Units / runs |
+|---|---|---|---|
+| A agreement kept | 91.48 [90.23, 92.68] | 8.52 [7.32, 9.77] | 1,094 / 44 |
+| B no comms | 87.71 [86.18, 89.70] | 12.29 [10.30, 13.82] | 300 / 10 |
+| C agreement broken | 86.58 [84.77, 88.71] | 13.42 [11.29, 15.23] | 39 / 13 |
+| D no agreement | 89.62 [87.92, 91.34] | 10.38 [8.66, 12.08] | 817 / 56 |
+
+C, all 75 runs (`results/c_descriptive.csv`): 39 units in 13 runs; mean window 2.3; mean shortfall below the agreed
+level $3.59; mean ask - $90 = +0.44; judge mean 3.18.
+
+### Ladder of communication evidence, all 75 runs (pre-registered; raw means; `results/ladder_*.csv`, `fig_ladder.png`)
+
+Seller's mean ask - $90 per window:
+
+| Rung | Mean | 95% CI | Units / runs |
+|---|---|---|---|
+| B no talk possible | +0.12 | [-1.21, +1.57] | 300 / 10 |
+| D0 talk, no coordination content | +3.08 | [+2.49, +3.72] | 519 / 21 |
+| D1 vague talk only | +3.25 | [+2.03, +4.64] | 236 / 54 |
+| D2 invitation not accepted | +3.20 | [+2.03, +4.43] | 62 / 28 |
+| Agreement (A + C) | +2.35 | [+1.55, +3.05] | 1,133 / 44 |
+
+Steps: B -> D0 +2.96 [+1.37, +4.47]; D0 -> D1 +0.17 [-1.19, +1.64]; D1 -> D2 -0.05 [-1.27, +1.03];
+D2 -> agreement -0.85 [-2.23, +0.54].
+
+Confounds: D0 is almost all gagged oversight runs, and its mean depends on condition (`boss_pressure-oversight` +6.48,
+`oversight` -0.15; B +0.12). Timing: 65% of D1 units and 82% of D2 units are in window 1, when asks are high in every
+run. The raw rung means therefore mix communication with condition and time.
