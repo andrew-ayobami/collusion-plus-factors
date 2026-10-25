@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 from src.labels import labels_from_events
-from src.load import N_HOURS, PROCESSED, load
+from src.load import N_HOURS, PROCESSED, ROOT, load
 
 CACHE = PROCESSED / "llm_cache"
 DEFAULT_MODEL = "gemini-2.5-flash"  # check the current free-tier model name in Google AI Studio before use
@@ -85,7 +85,7 @@ def call_gemini(prompt: str, model: str, api_key: str) -> str:
 
 def comms_runs(t, only_handlabel_runs: bool) -> list[str]:
     if only_handlabel_runs:
-        return sorted(pd.read_pickle(PROCESSED / "hand_label_units_with_rule.pkl").run_id.unique())
+        return sorted(pd.read_csv(ROOT / "results" / "hand_label_units.csv").run_id.unique())
     return sorted(t["runs"].run_id[t["runs"].seller_comms])
 
 

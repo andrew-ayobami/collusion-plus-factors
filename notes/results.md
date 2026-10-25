@@ -114,8 +114,10 @@ unaffected; the label-based numbers above are superseded by the v2 numbers below
 - v1 to v2: 94% of all 2,250 units keep the same label. No train message is a withdrawal. 0 rule ("no number")
   agreements form under the words reading, 23 under the Interstate reading. The VAGUE flag is set on 542 of 990
   train comms units.
-- Sensitivity (`results/labeller_sensitivity_train.csv`; tolerance x level-match): words-reading C ranges 15-45 and
-  is >= 20 in 6 of 9 settings, so the "C is descriptive" decision sits on the boundary (the frozen setting gives 19).
+- Sensitivity (`results/labeller_sensitivity_train.csv`; tolerance x level-match): words-reading C ranges 15-50 and
+  is >= 20 in **5 of 9** settings (29, 33, 50, 36, 29), so the "C is descriptive" decision sits on the boundary (the
+  frozen setting gives 19). *Corrected 25 Oct: this line first said "15-45, 6 of 9", from the grid run before the
+  codebook v2 additions; the committed CSV is the rerun.*
 
 Train-only 5-fold CV by run, A vs B (`python -m src.evaluate dryrun [interstate]`):
 
@@ -297,3 +299,19 @@ Outcome: seller's mean ask - $90 in the window. Difference vs the reference rung
 - Identical answers on all 10 units for agreement, vague and invitation: kappa 1.0 for each (agreement 5 yes / 5 no;
   vague 4 yes; invitation 6 yes in the recheck).
 - Small sample (10) and same-day recheck, so recall of the first answers cannot be ruled out.
+
+## Corrections and clarifications (25 Oct, after review by Andrew)
+
+- **`results/train_feature_auc.csv` regenerated with the v2 labels** (it still held v1 values; it had been made by an
+  inline script, now `python -m src.evaluate train_features`). Train half only; nothing in training or testing used
+  it. Current train means of `ask_minus_ce`: A +3.02, B +0.96, C -0.03, D +3.56 (v1 file: A +2.83, C +0.66, D +3.86).
+  The "Train half: single features" section above shows v1 values and is superseded.
+- **Sensitivity count corrected** above: C >= 20 in 5 of 9 settings, range 15-50.
+- **Two weightings for prices; quote one per purpose.**
+  - `harm_by_label.csv`: average within each run first, then across runs, so **each market counts once**
+    (A $91.48, B $87.71, C $86.58, D $89.62). Use these for any trade price quoted by label; it matches the
+    run-level bootstrap.
+  - `ladder_summary.csv` / `ladder_exploratory.csv`: average over seller-windows, so **each unit counts once**
+    (runs with more units weigh more; e.g. A $90.47, B $88.13, C $85.78 for trade price). The ladder's reported
+    outcome is the seller's ask, for which unit weighting is the pre-registered choice; do not quote the ladder's
+    trade-price column next to the harm table.

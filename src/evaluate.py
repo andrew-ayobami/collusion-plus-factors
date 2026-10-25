@@ -4,6 +4,7 @@
   python -m src.evaluate freeze [interstate]   fit on train half -> results/frozen_rules[_interstate].json (commit)
   python -m src.evaluate test [interstate]     apply frozen rules to the test half ONCE -> results/test_*[_interstate].csv
   python -m src.evaluate shift                 model-shift stretch test (main reading only)
+  python -m src.evaluate train_features        train-half per-feature AUCs and group means (descriptive)
 
 reading = "words" (main labels, codebook Rule 4) or "interstate" (sensitivity: silent compliance counts).
 Plan pre-registered in notes/decisions.md (2026-10-24 03:19; readings added before any hand label was seen).
@@ -212,6 +213,25 @@ def test(u=None, reading: str = "words"):
     print(pd.DataFrame(rows)[["task", "scorer", "n_pos", "n_neg", "tpr", "fpr", "auc"]].round(3).to_string(index=False))
 
 
+def train_features(u=None):
+    """Train half only: per-feature AUCs (A vs B, A vs D, D vs B) and group means -> results/train_feature_auc.csv."""
+    u = units() if u is None else u
+    tr = u[u.half == "train"].copy()
+    tr[ALL_FEATURES] = tr[ALL_FEATURES].fillna(tr[ALL_FEATURES].median())
+    rows = []
+    for f in ALL_FEATURES:
+        r = dict(feature=f)
+        for pos, neg in [("A", "B"), ("A", "D"), ("D", "B")]:
+            d = tr[tr.label.isin([pos, neg])]
+            r[f"auc_{pos}v{neg}"] = roc_auc_score(d.label == pos, d[f])
+        for lab in "ABCD":
+            r[f"mean_{lab}"] = tr.loc[tr.label == lab, f].mean()
+        rows.append(r)
+    res = pd.DataFrame(rows)
+    res.round(3).to_csv(RESULTS / "train_feature_auc.csv", index=False)
+    print(res.round(3).to_string(index=False))
+
+
 GPT_SELLER_CONDITIONS = ["base", "base-seller_comms", "oversight", "boss_pressure", "boss_pressure-oversight",
                          "claude_buyers-gpt_sellers-seller_comms"]
 
@@ -245,5 +265,7 @@ if __name__ == "__main__":
     cmd, reading = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "words")
     if cmd == "shift":
         shift()
+    elif cmd == "train_features":
+        train_features()
     else:
         {"dryrun": dryrun, "freeze": freeze, "test": test}[cmd](reading=reading)

@@ -32,11 +32,28 @@ git -C data/raw/llm-agent-collusion checkout 2bb2a7e
 ## Layout
 
 ```
-src/       load.py  features.py  labels.py  controls.py  evaluate.py
-tests/     pytest checks
-results/   csv, png, split.json, frozen_rules.json
-notes/     decisions.md  dual_use.md  method_facts.md
-data/      raw/ and processed/ (gitignored)
+src/
+  load.py           parse the 75 runs into tables; replay the order book
+  split.py          run-level train/test split (made once: results/split.json)
+  stats.py          bootstrap helpers (resampling runs)
+  controls.py       positive control (paper Table 1) and scripted-market control
+  labels.py         rule labeller following notes/codebook.md (A/B/C/D, ladder rungs)
+  features.py       plus-factor features per seller x 5-hour window (Tiers 1-3)
+  handlabel.py      hand-label and recheck sheets; kappa vs the rule labeller
+  evaluate.py       fit on train, freeze, test once; model-shift test
+  figures.py        figures, harm table, C table, ladder (pre-registered)
+  ladder_explore.py EXPLORATORY within-window ladder analysis (post-hoc)
+  influence.py      net influence stretch (Bonjour et al. 2022)
+  llm_labels.py     fallback LLM labeller (prepared, never run)
+tests/              loader, feature and codebook-rule checks (pytest)
+results/            csv tables, png figures, split.json, frozen_rules*.json, kappa.json
+notes/
+  codebook.md       agreement codebook (Andrew)
+  decisions.md      every analysis decision, with times (pre-registrations included)
+  results.md        all numbers, with the file each comes from
+  method_facts.md   facts about the source data and code
+  dual_use.md       notes for the dual-use / ethics appendix
+data/               raw/ and processed/ (gitignored: never committed)
 ```
 
 ## Running the pipeline
