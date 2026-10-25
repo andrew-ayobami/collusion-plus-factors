@@ -53,6 +53,7 @@ python -m src.evaluate test [interstate]     # test half, once
 python -m src.evaluate shift       # model-shift stretch test
 python -m src.figures              # figures and descriptive tables
 python -m src.influence check|train|test     # net influence stretch (Bonjour et al. 2022)
+python -m src.ladder_explore       # EXPLORATORY ladder analysis (post-hoc)
 ```
 
 `src/split.py` made `results/split.json` once; it refuses to overwrite it.

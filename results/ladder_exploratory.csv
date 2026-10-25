@@ -1,0 +1,21 @@
+spec,contrast,kind,estimate,lo,hi,n_units,n_units_in_mixed_cells,n_rung_in_mixed_cells
+condition x window,D1 vs D0,vs reference,-0.2088,-0.8354,0.2762,1950,1000,236.0
+condition x window,D2 vs D0,vs reference,-0.3096,-1.1318,0.4242,1950,1000,62.0
+condition x window,AC vs D0,vs reference,0.5527,-0.6258,1.4026,1950,1000,583.0
+condition x window,D0 -> D1,step,-0.2088,-0.8354,0.2762,1950,1000,
+condition x window,D1 -> D2,step,-0.1008,-0.5969,0.4745,1950,1000,
+condition x window,D2 -> AC,step,0.8623,-0.3194,1.6752,1950,1000,
+run x window,D1 vs D0,vs reference,0.0361,-0.6423,0.6311,1950,405,181.0
+run x window,D2 vs D0,vs reference,0.1341,-0.5695,0.7319,1950,405,52.0
+run x window,AC vs D0,vs reference,0.0758,-0.5954,0.6768,1950,405,138.0
+run x window,D0 -> D1,step,0.0361,-0.6423,0.6311,1950,405,
+run x window,D1 -> D2,step,0.098,-0.1012,0.2948,1950,405,
+run x window,D2 -> AC,step,-0.0583,-0.2642,0.1379,1950,405,
+"B vs comms, window",D0 vs B,vs reference,3.5573,1.869,5.1041,2250,2250,519.0
+"B vs comms, window",D1 vs B,vs reference,0.5845,-1.0354,2.2452,2250,2250,236.0
+"B vs comms, window",D2 vs B,vs reference,-0.2912,-2.0928,1.4883,2250,2250,62.0
+"B vs comms, window",AC vs B,vs reference,2.6633,0.9584,4.2439,2250,2250,1133.0
+"B vs comms, window",B -> D0,step,3.5573,1.869,5.1041,2250,2250,
+"B vs comms, window",D0 -> D1,step,-2.9728,-4.0763,-1.6567,2250,2250,
+"B vs comms, window",D1 -> D2,step,-0.8757,-1.9579,0.0913,2250,2250,
+"B vs comms, window",D2 -> AC,step,2.9545,1.6298,4.3482,2250,2250,

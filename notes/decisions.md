@@ -235,3 +235,4 @@ Question: holding time and setting fixed, do asks rise as communication evidence
 
 | Time (WAT) | Decision | Reason |
 |---|---|---|
+| 2026-10-25 07:35 | Exploratory ladder analysis run once (07:34); outputs committed as produced. Figure then redrawn from the saved CSV for layout only (clipped title, legends over data); CSV verified byte-identical. | Exploratory analysis approved by Andrew. |

@@ -263,3 +263,30 @@ D2 -> agreement -0.85 [-2.23, +0.54].
 Confounds: D0 is almost all gagged oversight runs, and its mean depends on condition (`boss_pressure-oversight` +6.48,
 `oversight` -0.15; B +0.12). Timing: 65% of D1 units and 82% of D2 units are in window 1, when asks are high in every
 run. The raw rung means therefore mix communication with condition and time.
+
+## EXPLORATORY (post-hoc) ladder analysis, all 75 runs (`results/ladder_exploratory.csv`, `fig_ladder_exploratory.png`)
+
+Designed after the test results; defined in `notes/decisions.md` (25 Oct 07:33) before it ran (07:34, once).
+Outcome: seller's mean ask - $90 in the window. Difference vs the reference rung, 95% CI over runs.
+
+| Comparison | D1 vague only | D2 invitation not accepted | Agreement (A + C) |
+|---|---|---|---|
+| vs D0, same condition and window | -0.21 [-0.84, +0.28] | -0.31 [-1.13, +0.42] | +0.55 [-0.63, +1.40] |
+| vs D0, same market and window | +0.04 [-0.64, +0.63] | +0.13 [-0.57, +0.73] | +0.08 [-0.60, +0.68] |
+
+- Same condition and window: 1,000 of 1,950 comms units sit in cells with more than one rung. Same market and window:
+  405 units.
+- Steps, same market and window: D0 -> D1 +0.04 [-0.64, +0.63]; D1 -> D2 +0.10 [-0.10, +0.30];
+  D2 -> agreement -0.06 [-0.26, +0.14].
+
+| vs B, same window (condition not held fixed) | Difference |
+|---|---|
+| D0 talk, no coordination content | +3.56 [+1.87, +5.10] |
+| D1 vague only | +0.59 [-1.04, +2.25] |
+| D2 invitation not accepted | -0.29 [-2.09, +1.49] |
+| Agreement (A + C) | +2.66 [+0.96, +4.24] |
+
+- Within the same condition and window, no rung's mean ask differs from D0 (all CIs include 0). Within the same
+  market and window, the estimates are within about $0.15 of zero.
+- Against B in the same window, agreement units ask $2.66 more and D0 units $3.56 more (D0 is mostly
+  `boss_pressure-oversight`); D1 and D2 units are not distinguishable from B.

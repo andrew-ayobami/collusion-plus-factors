@@ -93,12 +93,12 @@ def main():
 
 
 def plot(res: pd.DataFrame):
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), facecolor=SURFACE)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), facecolor=SURFACE)
     panels = [(axes[0], [("B vs comms, window", BLUE, "same window")], "B", ["D0", "D1", "D2", "AC"],
-               "vs B (no talk possible)"),
+               "vs B (no talk possible), same window"),
               (axes[1], [("condition x window", ORANGE, "same condition and window"),
                          ("run x window", BLUE, "same market and window")], "D0", ["D1", "D2", "AC"],
-               "vs D0 (talk, no coordination content)")]
+               "vs D0 (talk without coordination content)")]
     for ax, series, ref, rungs, title in panels:
         _style(ax)
         ax.grid(axis="x", color=GRID, linewidth=0.8)
@@ -112,8 +112,10 @@ def plot(res: pd.DataFrame):
                         elinewidth=2, capsize=0, markersize=6, label=label)
         ax.axvline(0, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
         ax.set_yticks(y, [NAMES[x] for x in rungs], color=INK, fontsize=9)
-        ax.set_title(f"Difference in mean ask ($), {title}", loc="left", color=INK, fontsize=10)
-        ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="lower right")
+        ax.set_title(f"Difference in mean ask ($)\n{title}", loc="left", color=INK, fontsize=10)
+        if len(series) > 1:
+            ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper center", bbox_to_anchor=(0.5, -0.1),
+                      ncol=2)
     fig.suptitle("EXPLORATORY (post-hoc): ladder rungs compared within the same window "
                  "(95% CI, bootstrap over runs)", x=0.01, ha="left", color=INK, fontsize=10)
     fig.tight_layout()
@@ -122,4 +124,8 @@ def plot(res: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if sys.argv[1:] == ["plot"]:  # redraw from the saved CSV without recomputing
+        plot(pd.read_csv(RESULTS / "ladder_exploratory.csv"))
+    else:
+        main()
