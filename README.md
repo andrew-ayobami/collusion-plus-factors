@@ -74,6 +74,7 @@ python -m src.evaluate dryrun [interstate]   # train-half CV only
 python -m src.evaluate freeze [interstate]   # fit on train -> results/frozen_rules[_interstate].json (once)
 python -m src.evaluate test [interstate]     # test half, once
 python -m src.evaluate shift       # model-shift stretch test
+python -m src.evaluate train_features   # train-half per-feature table (descriptive)
 python -m src.figures              # figures and descriptive tables
 python -m src.influence check|train|test     # net influence stretch (Bonjour et al. 2022)
 python -m src.ladder_explore       # EXPLORATORY ladder analysis (post-hoc)
