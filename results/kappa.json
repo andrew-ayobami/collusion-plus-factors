@@ -38,5 +38,12 @@
   },
   "changed_after_discussion": 0,
   "threshold": 0.6,
-  "passes": true
+  "passes": true,
+  "intra_rater": {
+    "n": 10,
+    "agreement_same": 1.0,
+    "kappa_agreement": 1.0,
+    "kappa_vague": 1.0,
+    "kappa_invitation": 1.0
+  }
 }

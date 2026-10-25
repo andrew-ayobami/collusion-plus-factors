@@ -236,3 +236,4 @@ Question: holding time and setting fixed, do asks rise as communication evidence
 | Time (WAT) | Decision | Reason |
 |---|---|---|
 | 2026-10-25 07:35 | Exploratory ladder analysis run once (07:34); outputs committed as produced. Figure then redrawn from the saved CSV for layout only (clipped title, legends over data); CSV verified byte-identical. | Exploratory analysis approved by Andrew. |
+| 2026-10-25 11:48 | Recheck received (10/10 units; file copied from Andrew's Downloads, original left in place). Level and notes left empty (not scored). Intra-rater result: identical answers on all 10 units for agreement, vague and invitation (kappa 1.0 each). Earlier kappa values verified unchanged. Caveats: only 10 units; recheck done about 5 hours after the first pass (06:54 -> 11:46, same day), so memory of the first answers cannot be ruled out. | Codebook v2, How to label step 7. |

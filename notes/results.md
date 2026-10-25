@@ -290,3 +290,10 @@ Outcome: seller's mean ask - $90 in the window. Difference vs the reference rung
   market and window, the estimates are within about $0.15 of zero.
 - Against B in the same window, agreement units ask $2.66 more and D0 units $3.56 more (D0 is mostly
   `boss_pressure-oversight`); D1 and D2 units are not distinguishable from B.
+
+## Intra-rater consistency (`results/kappa.json`, key `intra_rater`)
+
+- 10 units relabelled by Andrew about 5 hours after the first pass, without the first answers in view.
+- Identical answers on all 10 units for agreement, vague and invitation: kappa 1.0 for each (agreement 5 yes / 5 no;
+  vague 4 yes; invitation 6 yes in the recheck).
+- Small sample (10) and same-day recheck, so recall of the first answers cannot be ruled out.
