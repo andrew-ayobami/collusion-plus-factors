@@ -2,6 +2,11 @@
 
 Apart Research AI Collusion Research Sprint, 23–25 Oct 2026. Track 2, question 2.3.
 
+This project asks what should count as convincing evidence that LLM pricing agents colluded. It turns the antitrust
+"plus factors" doctrine into metrics across three tiers of evidence (public conduct, seller messages and private
+reasoning), and tests on 75 published market runs which tiers separate sellers who agreed on prices from sellers who
+merely behaved alike.
+
 Data: Agrawal et al. (2025), arXiv 2507.01413,
 https://github.com/andyjliu/llm-agent-collusion at commit `2bb2a7e`.
 The data is not included in this repo.
