@@ -1,6 +1,7 @@
 # Decisions log
 
-Every analysis choice, with the time (WAT). Metric definitions go here
+Every analysis choice, with the time (WAT). `CLAUDE.md` (the project brief) was removed from the repo on
+26 Oct 2026; its versions remain in git history (first: commit `28161ea`). Metric definitions go here
 **before** any results are seen.
 
 | Time (WAT) | Decision | Reason |

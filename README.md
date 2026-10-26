@@ -1,4 +1,4 @@
-# Plus factors for AI agent collusion
+# Plus-Factor Evidence for LLM Agent Collusion
 
 Apart Research AI Collusion Research Sprint, 23–25 Oct 2026. Track 2, question 2.3.
 

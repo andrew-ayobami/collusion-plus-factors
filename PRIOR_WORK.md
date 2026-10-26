@@ -10,7 +10,7 @@ Rule for Phase 0: setup, reading and planning only. No analysis code.
 
 | Date (WAT) | What | Where |
 |---|---|---|
-| 2026-10-10 (before this log) | Project brief written (`CLAUDE.md`): research question, plus-factor list, labelling plan, analysis plan. | `CLAUDE.md` |
+| 2026-10-10 (before this log) | Project brief written (`CLAUDE.md`; removed from the repo on 26 Oct 2026, original in commit `28161ea`): research question, plus-factor list, labelling plan, analysis plan. | `CLAUDE.md` |
 | 2026-10-10 (before this log) | Data repo inspected. A quick parser was run on all runs (75; the brief then said 76) as a sanity check: mean trade price $87.71 (no-comms `base`) vs $90.52 (matching comms runs). That parser is **not** in this repo. See note below. | `CLAUDE.md`, "Data" section |
 | 2026-10-10 | Git repo created; folders and notes files set up. | repo root |
 | 2026-10-10 | Python environment set up (versions pinned). | `requirements.txt` |
@@ -20,7 +20,7 @@ Rule for Phase 0: setup, reading and planning only. No analysis code.
 
 ## Note on the pre-sprint sanity check
 
-`CLAUDE.md` records that the mean trade price was already computed before the
+The project brief (`CLAUDE.md`, commit `28161ea`) records that the mean trade price was already computed before the
 sprint. This is a small piece of pre-sprint analysis and must be disclosed.
 The sprint loader in `src/load.py` was written from scratch during the sprint (24 Oct, commit `2452c1d`).
 

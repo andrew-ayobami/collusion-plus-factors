@@ -19,3 +19,6 @@ desktop.ini
 
 # Local tool config
 .claude/
+
+# Project brief for the AI assistant (removed from the repo 26 Oct 2026; original in commit 28161ea)
+CLAUDE.md
